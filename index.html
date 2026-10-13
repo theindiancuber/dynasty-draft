@@ -191,7 +191,7 @@ em.t-dm,b.t-dm{background:linear-gradient(120deg,#3a1a6e,#0d0d16 50%,#1b4a5c);co
 @keyframes rise{from{transform:translateY(12px);opacity:0}}
 #pack-cards.sweep .card{animation:sweep .38s ease forwards}
 @keyframes sweep{to{transform:translateX(-50px) rotate(-6deg);opacity:0}}
-@media (prefers-reduced-motion:reduce){.foil{animation:none!important}.card .inner{transition:none}.card.deal,.card.signed,.view,.toast,.lv-feed li,.live-card,#pack-head.rip>div{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.foil{animation:none!important}.card .inner{transition:none}.card.deal,.card.signed,.view,.toast,.lv-feed li,.live-card,#pack-head.ripin>div{animation:none!important}}
 
 /* draft */
 .draft-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;padding-block:24px 48px;align-items:start}
@@ -352,8 +352,8 @@ body.noscroll{overflow:hidden}
 .pk-bg{position:absolute;inset:0;background:var(--img,none) center/cover;opacity:0;transition:opacity .8s;filter:saturate(.8)}
 .pk-bg.has{opacity:.22}
 .pk-odds b{padding:3px 8px;border-radius:4px;color:#1b1407;font-variant-numeric:tabular-nums}
-#pack-head.rip>div{animation:rip .5s cubic-bezier(.2,.8,.2,1) both}
-#pack-head.rip>div:nth-child(2){animation-delay:.07s}#pack-head.rip>div:nth-child(3){animation-delay:.14s}#pack-head.rip>div:nth-child(4){animation-delay:.21s}
+#pack-head.ripin>div{animation:rip .5s cubic-bezier(.2,.8,.2,1) both}
+#pack-head.ripin>div:nth-child(2){animation-delay:.07s}#pack-head.ripin>div:nth-child(3){animation-delay:.14s}#pack-head.ripin>div:nth-child(4){animation-delay:.21s}
 @keyframes rip{from{opacity:0;transform:translateY(-10px) scale(.97)}}
 .undo{display:block;margin:10px auto 0;background:none;border:1px solid rgba(246,234,211,.25);border-radius:999px;padding:5px 12px;font:600 10px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:#f6ead3}
 .undo:hover{border-color:#f6ead3}
@@ -427,6 +427,92 @@ body.noscroll{overflow:hidden}
 .confetti i{position:absolute;top:-14px;left:var(--x);width:8px;height:14px;background:var(--c);transform:rotate(var(--r));animation:fall 3.2s var(--d) cubic-bezier(.3,.5,.4,1) forwards}
 @keyframes fall{to{transform:translateY(105vh) rotate(calc(var(--r) + 540deg))}}
 
+/* NBA broadcast theme: league navy, red and white, hardwood and court lines */
+:root{--floor:#07112a;--panel:#0d1b3a;--panel2:#13274f;--line:#22396b;--chalk:#f3f6fc;--muted:#93a4c7;--led:#e0283f;--nba-blue:#1d428a;--nba-red:#c8102e;--win:#3ccf8e;--loss:#ff5a5f}
+body{background:radial-gradient(1200px 500px at 50% -200px,rgba(29,66,138,.45),transparent 70%),var(--floor)}
+.top{background:rgba(7,17,42,.94);border-bottom:0}
+.top::after{content:"";display:block;height:4px;background:linear-gradient(90deg,var(--nba-blue) 0 46%,#fff 46% 54%,var(--nba-red) 54%)}
+.brand{align-items:center}
+.brand .mark{width:16px;height:30px;border-radius:4px;background:linear-gradient(90deg,var(--nba-blue) 50%,var(--nba-red) 50%);box-shadow:0 0 0 2px #fff;flex:none}
+.brand b{color:#fff}
+.ticker{overflow:hidden;background:#030a1c;border-top:1px solid var(--line);font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tk-in{display:flex;width:max-content;animation:tick 60s linear infinite}
+.tk-in span{padding:6px 18px;border-right:1px solid var(--line);white-space:nowrap}
+.tk-in b{color:#fff;margin-right:6px}
+@keyframes tick{to{transform:translateX(-50%)}}
+.cta{background:var(--nba-red);color:#fff;box-shadow:0 0 0 1px #ff5168 inset,0 8px 24px -10px var(--nba-red)}
+.place [data-s]{background:var(--nba-red);color:#fff}
+.kicker,.eyebrow{color:#ff6b7d}
+.hero::after{display:none}
+.hero .court{position:absolute;left:0;right:0;bottom:0;width:100%;height:46%;color:rgba(255,255,255,.55);z-index:0;pointer-events:none}
+.hero h1{color:#fff}.hero h1 span{color:var(--maple);-webkit-text-stroke:0}
+.sec-h h2,h3.sub{border-left:6px solid var(--nba-red);padding-left:12px}
+.scoreboard>div{background:#020713;box-shadow:inset 0 -3px 0 var(--nba-blue)}
+.leg{border-top-width:6px}
+.chem-h span{float:right;font:700 13px var(--f-mono)}
+.mys-btn{display:grid;gap:2px;width:100%;margin-top:12px;text-align:left;background:linear-gradient(120deg,#1d428a,#3a1a6e 60%,#c8102e);border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:10px 12px;color:#fff;box-shadow:0 0 18px -6px rgba(138,92,255,.8)}
+.mys-btn b{font:800 18px/1 var(--f-display);letter-spacing:.06em;text-transform:uppercase}
+.mys-btn small{font-size:11.5px;opacity:.85}
+.mys-btn:hover{filter:brightness(1.1)}
+
+/* the physical pack */
+.rip{position:fixed;inset:0;z-index:65;background:radial-gradient(800px 500px at 50% 40%,rgba(29,66,138,.55),rgba(3,6,15,.94));backdrop-filter:blur(5px);overflow:auto;padding:16px}
+.rip.out{opacity:0;transition:opacity .3s}
+.rip-stage{min-height:100%;display:grid;place-items:center;align-content:center;gap:18px;padding-block:16px}
+.rip-hint{margin:0;font:500 12px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:center;animation:blink 1.6s infinite}
+.wrapper{position:relative;width:230px;height:330px;border:0;padding:0;background:none;cursor:pointer;animation:wobble 2.4s ease-in-out infinite;filter:drop-shadow(0 24px 30px rgba(0,0,0,.6))}
+.wrapper>span{position:absolute;left:0;right:0;border-radius:10px;background:linear-gradient(160deg,var(--c1),color-mix(in srgb,var(--c1) 60%,#000) 55%,var(--c2));overflow:hidden}
+.wrapper>span::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.45) 40%,transparent 50%);background-size:260% 100%;animation:sheen 3.2s linear infinite}
+.w-top{top:0;height:48px;border-radius:10px 10px 0 0!important;-webkit-mask:linear-gradient(#000,#000) top/100% 40px no-repeat,radial-gradient(circle at 6px 0,transparent 5px,#000 5.5px) bottom/12px 8px repeat-x;transition:transform .55s cubic-bezier(.3,.6,.4,1),opacity .55s}
+.w-body{top:44px;bottom:0;border-radius:0 0 10px 10px!important;display:grid;align-content:center;justify-items:center;gap:6px;text-align:center;padding:16px;color:#fff;transition:transform .6s .1s ease,opacity .5s .15s}
+.w-body small{font:600 11px var(--f-mono);letter-spacing:.24em;text-transform:uppercase;opacity:.85}
+.w-body b{font:900 32px/1 var(--f-display);text-transform:uppercase;text-wrap:balance;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.w-body em{font:600 12px var(--f-mono);font-style:normal;letter-spacing:.12em;text-transform:uppercase;background:rgba(0,0,0,.4);padding:4px 8px;border-radius:4px}
+.w-body i{font:500 11px var(--f-mono);font-style:normal;opacity:.8}
+.wrapper.myst>span{background:conic-gradient(from 200deg,#1d428a,#3a1a6e,#c8102e,#f2c94c,#1d428a)}
+.wrapper:hover{animation-play-state:paused;transform:scale(1.03)}
+.wrapper.torn{animation:shake .25s 2}
+.wrapper.torn .w-top{transform:translate(70px,-160px) rotate(28deg);opacity:0}
+.wrapper.torn .w-body{transform:translateY(240px);opacity:0}
+@keyframes wobble{50%{transform:rotate(-1.5deg) translateY(-6px)}}
+@keyframes shake{25%{transform:rotate(2deg)}75%{transform:rotate(-2deg)}}
+.rip-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;max-width:1100px}
+.pc{--w:180px;position:relative;width:var(--w);aspect-ratio:1/1.48;perspective:1000px;cursor:pointer;animation:fly .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i)*110ms);display:grid}
+.pc .card{--w:180px}
+.pc-in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.2,.8,.2,1);transform:rotateY(180deg)}
+.pc.up .pc-in{transform:none}
+.pc-back,.pc-front{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.pc-back{transform:rotateY(180deg);border-radius:.9em;border:4px solid #fff;background:repeating-linear-gradient(135deg,var(--nba-blue) 0 14px,#16367a 14px 28px);display:grid;place-items:center;align-content:center;gap:6px;box-shadow:0 14px 30px -12px #000}
+.pc-back::before{content:"";position:absolute;inset:auto 0 18% 0;height:10px;background:var(--nba-red)}
+.pc-back span{width:70px;height:70px;border-radius:50%;background:#fff;color:var(--nba-blue);display:grid;place-items:center;font:900 30px/1 var(--f-display);position:relative}
+.pc-back small{font:600 11px var(--f-mono);letter-spacing:.2em;text-transform:uppercase;color:#fff;position:relative}
+.pc:not(.up):hover .pc-in{transform:rotateY(180deg) translateY(-6px)}
+.pc:focus-visible{outline:2px solid var(--gold);outline-offset:4px;border-radius:12px}
+.pc.walkout .pc-front{animation:walkout 1.2s ease}
+.pc.walkout::after{content:"";position:absolute;inset:-14px;border-radius:20px;pointer-events:none;background:radial-gradient(closest-side,rgba(242,201,76,.55),transparent);animation:glow 1.6s ease-out forwards;z-index:-1}
+@keyframes fly{from{opacity:0;transform:translateY(80px) scale(.8)}}
+@keyframes walkout{0%{transform:scale(1)}30%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes glow{from{opacity:1;transform:scale(.9)}to{opacity:0;transform:scale(1.3)}}
+.pc .sign{position:absolute;left:8px;right:8px;bottom:-48px;padding:10px;font-size:15px}
+.pc:has(.sign){margin-bottom:54px}
+.rip-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+/* mystery trade */
+.my-lede{color:#d6dce8;margin:0 0 12px}
+.my-sub{font:600 11px var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+.my-odds{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px}
+.my-odds li{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 10px;display:flex;justify-content:space-between;gap:8px;font-size:13px}
+.my-odds li b{font:600 13px var(--f-mono);color:var(--gold)}
+.my-odds li.tot{grid-column:1/-1;border-color:var(--gold)}
+.my-list{display:grid;gap:6px}
+.my-list button{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:8px;align-items:center;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.my-list button span{font:600 11px var(--f-mono);color:var(--muted)}
+.my-list button em{font:700 12px var(--f-mono);font-style:normal;padding:2px 6px;border-radius:4px;color:#1b1407}
+.my-list button.on{border-color:var(--nba-red);background:var(--panel2)}
+.my-confirm{margin-top:14px;display:grid;gap:10px;justify-items:start}
+.my-confirm p{margin:0}
+@media (prefers-reduced-motion:reduce){.tk-in,.wrapper,.pc,.rip-hint,.wrapper>span::after{animation:none!important}}
+
 @media (max-width:960px){
   .draft-grid,.reveal-grid,.season-grid,.r-grid{grid-template-columns:minmax(0,1fr)}
   .board{position:static}
@@ -435,6 +521,9 @@ body.noscroll{overflow:hidden}
 }
 @media (max-width:600px){
   .card{--w:160px}
+  .pc,.pc .card{--w:150px}
+  .rip-cards{gap:10px}
+  .wrapper{width:200px;height:290px}
   #pack-cards,#reveal-cards{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
   .odds-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   #po-panel{grid-template-columns:minmax(0,1fr)}
@@ -459,14 +548,14 @@ body.noscroll{overflow:hidden}
 <body>
 
 <header class="top"><div class="wrap">
-  <button class="brand" data-go="home"><b>DYNASTY DRAFT</b><small>All-time NBA</small></button>
+  <button class="brand" data-go="home"><i class="mark" aria-hidden="true"></i><b>DYNASTY DRAFT</b><small>All-time NBA</small></button>
   <nav><button data-go="banners">Banners</button><button data-go="how">How it works</button></nav>
-</div></header>
+</div><div class="ticker" aria-hidden="true"><div class="tk-in" id="ticker"></div></div></header>
 
 <main>
 <!-- HOME -->
 <div class="view" id="v-home">
-  <section class="hero"><div class="wrap">
+  <section class="hero"><svg class="court" viewBox="0 0 1000 320" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="4"><path d="M0 318H1000"/><path d="M380 318V120H620V318"/><circle cx="500" cy="120" r="80"/><path d="M110 318V250A390 390 0 0 1 890 250V318"/><circle cx="500" cy="300" r="10"/></g></svg><div class="wrap">
     <div>
       <div class="kicker">1959 – 2025 · 70 years of hardwood</div>
       <h1>Draft an eight.<br><span>Hang a banner.</span></h1>
@@ -571,14 +660,15 @@ body.noscroll{overflow:hidden}
     <button class="x" id="how-close" aria-label="Close">×</button>
     <h2 id="how-h">How it works</h2>
     <ol>
-      <li><span>Each pack is a <b>team of the decade</b>, say the 1990s Bulls: the ten players who logged the most games for them.</span></li>
+      <li><span>Each pack is a <b>team of the decade</b>, say the 1990s Bulls. Tear it open to get 6 of their 10 core players. Stars are rare pulls, cool off right after you land one, and come due after a dry spell.</span></li>
       <li><span>Pick <b>one player</b> for your eight-man rotation. His card shows only that decade's numbers.</span></li>
       <li><span>Cards only fit the <b>positions they played</b>. Bench spots take a guard, a wing and a big.</span></li>
       <li><span>Don't like the draw? You can <b>reroll once</b>. Some packs carry luck: a <b>Moments</b> card (+3 OVR) or a bonus reroll.</span></li>
-      <li><span>Watch your <b>chemistry</b>: a floor general, shooters, a rim protector, and not too many ball-dominant scorers.</span></li>
+      <li><span>Watch your <b>chemistry</b>. Title teams have a closer and a second star, a floor general, shooters, two-way wings and a rim protector. Teammates from the same pack bring continuity. Too many players who need the ball, or old feuds like Warriors Durant and Westbrook, cost you.</span></li>
+      <li><span>Once per draft, make a <b>mystery trade</b>: give up a player for a sealed 3-card pack at his spot. Each card has a 2% chance to be a 99.</span></li>
       <li><span>Flip a card for its <b>matchup splits</b>: how that player's game holds up against each legend's style.</span></li>
       <li><span>Your eight plays a <b>16-game gauntlet</b>, home and away against eight all-time teams. Watch each game live with win odds, or sim ahead.</span></li>
-      <li><span>The <b>top four</b> make the playoffs. Win two best-of-seven series to hang a banner.</span></li>
+      <li><span>The <b>top four</b> make the playoffs, where rotations tighten and starters play 40 minutes. Win two best-of-seven series to hang a banner.</span></li>
     </ol>
     <div class="tiers"><em class="t-dm">Dark Matter 98+</em><em class="t-go">Galaxy Opal 96</em><em class="t-pd">Pink Diamond 94</em><em class="t-di">Diamond 91</em><em class="t-am">Amethyst 88</em><em class="t-ru">Ruby 85</em><em class="t-sa">Sapphire 82</em><em class="t-em">Emerald 79</em><em class="t-gd">Gold 75</em><em class="t-sv">Silver 70</em><em class="t-bz">Bronze</em></div>
     <button class="cta" id="how-start">Start the draft</button>
@@ -593,6 +683,19 @@ body.noscroll{overflow:hidden}
     <ol class="lv-feed" id="lv-feed" aria-live="polite"></ol>
     <div class="lv-box" id="lv-box" hidden></div>
     <div class="lv-actions" id="lv-actions"></div>
+  </div>
+</div>
+<div class="rip" id="rip" hidden role="dialog" aria-modal="true" aria-label="Pack opening"></div>
+<div class="modal" id="mystery" hidden role="dialog" aria-modal="true" aria-labelledby="my-h">
+  <div class="modal-card">
+    <button class="x" id="my-close" aria-label="Close">×</button>
+    <h2 id="my-h">Mystery trade</h2>
+    <p class="my-lede">Give up one player for a sealed pack of three cards that fit his spot, then sign one of them. One trade per draft.</p>
+    <h3 class="my-sub">Odds per card</h3>
+    <ul class="my-odds" id="my-odds"></ul>
+    <h3 class="my-sub">Who goes?</h3>
+    <div class="my-list" id="my-list"></div>
+    <div class="my-confirm" id="my-confirm" hidden></div>
   </div>
 </div>
 <div id="toasts" aria-live="polite"></div>
@@ -1276,8 +1379,33 @@ const SLOTS=[
 ];
 const fits=(p,slot)=>p.pos.some(x=>slot.acc.includes(x));
 
-// ---------- team model ----------
-function teamModel(list){ // list: [{p,min,start}]
+// ---------- what makes a team work ----------
+// Built on Dean Oliver's Four Factors (shooting, turnovers, offensive boards, free throws), plus what title teams share:
+// a true closer and a second star, two-way wings, spacing, a rim protector, continuity, and stars who don't all need the ball.
+// Ball-dominant creators: high-usage players whose games shrink when they share the ball.
+const BALL=new Set(['James Harden','Luka Doncic','Russell Westbrook','Allen Iverson','Kobe Bryant','Kyrie Irving','Stephon Marbury','Dwyane Wade','LeBron James','Shai Gilgeous-Alexander','Damian Lillard','Michael Jordan','Dominique Wilkins','Jerry Stackhouse','Monta Ellis','Joel Embiid','Giannis Antetokounmpo','Wilt Chamberlain','Elgin Baylor','Rick Barry','DeMar DeRozan','Tyler Herro','Jerry West']);
+// Real fallings-out. The team code, when set, limits that side to one stint (Warriors Durant, not Thunder Durant).
+const FEUDS=[
+ ['Kevin Durant','GSW','Russell Westbrook','','Durant left Russ and OKC for Golden State'],
+ ["Shaquille O'Neal",'','Kobe Bryant','','Shaq and Kobe feuded through three titles and a breakup'],
+ ['Kyrie Irving','','LeBron James','','Kyrie asked out of Cleveland to get out of LeBron\'s shadow'],
+ ['Michael Jordan','','Isiah Thomas','','The 1991 walk-off and the Dream Team snub'],
+ ['Magic Johnson','','Isiah Thomas','','A friendship that broke in the early 90s'],
+ ['Ray Allen','MIA','Kevin Garnett','','Allen left the Celtics for Miami'],
+ ['Ray Allen','MIA','Paul Pierce','','Allen left the Celtics for Miami'],
+ ['Kawhi Leonard','TOR','Tony Parker','','Kawhi\'s messy exit from San Antonio'],
+ ['Kawhi Leonard','TOR','Tim Duncan','','Kawhi\'s messy exit from San Antonio'],
+ ['Dwight Howard','','Kobe Bryant','','One rocky season together in L.A.'],
+ ['Stephon Marbury','','Kevin Garnett','','Marbury forced his way out of Minnesota'],
+ ['Charles Barkley','','Michael Jordan','','A very public falling-out'],
+];
+const sideOK=(p,n,t)=>p.name===n&&(!t||p.team===t);
+function feudsIn(list){const out=[];
+  for(const [a,at,b,bt,why] of FEUDS){const A=list.find(x=>sideOK(x.p,a,at)), B=list.find(x=>sideOK(x.p,b,bt)); if(A&&B)out.push({a:A,b:B,why});}
+  return out;}
+const isBall=p=>BALL.has(p.name)||(p.sco>=94&&p.ply>=72&&!p.pos.includes('C'));
+const lastName=n=>sur(n);
+function teamModel(list,{legend=false}={}){ // list: [{p,min,start}]
   const tot=list.reduce((a,x)=>a+x.min,0)||1;
   const wavg=fn=>list.reduce((a,x)=>a+fn(x.p)*x.min,0)/tot;
   const OFF=wavg(p=>.5*p.ovr+.3*p.sco+.1*p.ply+.1*p.shot);
@@ -1287,17 +1415,38 @@ function teamModel(list){ // list: [{p,min,start}]
   const st=list.filter(x=>x.start).map(x=>x.p);
   const chem=[];
   if(st.length){
+    // star power: the best player decides close playoff games, and he needs a running mate
+    const ovrs=list.map(x=>x.p.ovr).sort((a,b)=>b-a);
+    chem.push(ovrs[0]>=97?{k:'Closer',v:1.5,txt:'A true alpha to close games',s:'good'}:ovrs[0]>=93?{k:'Closer',v:.5,txt:'A star who can take the last shot',s:'good'}:{k:'Closer',v:-2,txt:'Nobody to go to in crunch time',s:'bad'});
+    if(list.length>=2) chem.push(ovrs[1]>=92?{k:'Second star',v:1,txt:'A real No. 2 option',s:'good'}:{k:'Second star',v:0,txt:'The star carries a heavy load',s:'ok'});
     const mp=Math.max(...st.map(p=>p.ply));
-    chem.push(mp>=86?{k:'Floor general',v:2,txt:'Elite creator in the starting five',s:'good'}:mp>=76?{k:'Floor general',v:0,txt:'Someone can run the offense',s:'ok'}:{k:'Floor general',v:-3,txt:'No real playmaker starting',s:'bad'});
+    chem.push(mp>=86?{k:'Floor general',v:1.5,txt:'Elite creator in the starting five',s:'good'}:mp>=76?{k:'Floor general',v:0,txt:'Someone can run the offense',s:'ok'}:{k:'Floor general',v:-3,txt:'No real playmaker starting',s:'bad'});
     const sh=st.filter(p=>p.shot>=78).length;
     const sv=[-4,-2,0,1.5,2.5,3][sh];
     chem.push({k:'Spacing',v:sv,txt:sh+' shooter'+(sh===1?'':'s')+' in the five',s:sv>0?'good':sv===0?'ok':'bad'});
+    // too many players who need the ball: starters count fully, the sixth man half
+    const bh=list.filter(x=>isBall(x.p)&&(x.start||x.slot==='B6'));
+    const nb=bh.reduce((a,x)=>a+(x.start?1:.5),0);
+    if(nb>=2) chem.push({k:'One ball',v:-Math.round(2.5*(nb-1)*2)/2,txt:bh.map(x=>lastName(x.p.name)).join(', ')+' all need the ball',s:'bad'});
+    // shooting efficiency against each player's era (the biggest of the Four Factors)
+    const eff=wavg(p=>p.fg-FGB[p.decade]);
+    chem.push(eff>=3?{k:'Efficiency',v:1,txt:'Shoots well above league average',s:'good'}:eff<=-1.5?{k:'Efficiency',v:-1.5,txt:'Too many inefficient shots',s:'bad'}:{k:'Efficiency',v:0,txt:'League-average shot making',s:'ok'});
+    // defense: rim protection and two-way wings
     const mr=Math.max(...st.map(p=>p.rim));
     chem.push(mr>=90?{k:'Rim protection',v:2,txt:'An anchor at the rim',s:'good',d:1}:mr>=78?{k:'Rim protection',v:0,txt:'Serviceable paint defense',s:'ok',d:1}:{k:'Rim protection',v:-3,txt:'The paint is wide open',s:'bad',d:1});
-    const stars=st.filter(p=>p.sco>=92).length;
-    if(stars>2) chem.push({k:'One ball',v:-2.5*(stars-2),txt:stars+' high-usage scorers share one ball',s:'bad'});
+    const w3d=st.filter(p=>p.pos.some(x=>x==='SG'||x==='SF')&&p.def>=80&&p.shot>=70).length;
+    chem.push(w3d>=2?{k:'Two-way wings',v:1.5,txt:w3d+' wings who defend and shoot',s:'good',d:1}:w3d===1?{k:'Two-way wings',v:.5,txt:'One wing who defends and shoots',s:'ok',d:1}:{k:'Two-way wings',v:-1,txt:'No wing stopper who can also shoot',s:'bad',d:1});
     const rb=st.reduce((a,p)=>a+p.reb,0)/st.length;
     chem.push(rb>=66?{k:'Glass',v:1.5,txt:'Big rebounding five',s:'good'}:rb>=55?{k:'Glass',v:0,txt:'Holds its own on the boards',s:'ok'}:{k:'Glass',v:-2,txt:'Gets beaten on the boards',s:'bad'});
+    if(!legend){
+      // continuity: teammates from the same franchise and decade already know each other
+      const grp={}; list.forEach(x=>{const k=x.p.team+' '+x.p.decade; (grp[k]=grp[k]||[]).push(x.p)});
+      const pairs=Object.values(grp).filter(g=>g.length>1);
+      const np=pairs.reduce((a,g)=>a+g.length*(g.length-1)/2,0);
+      if(np) chem.push({k:'Continuity',v:Math.min(2.5,np*.75),txt:pairs.map(g=>g.map(p=>lastName(p.name)).join(' & ')).join('; ')+' played together',s:'good'});
+      feudsIn(list).forEach(f=>{const v=(f.a.start&&f.b.start)?-2.5:-1.5;
+        chem.push({k:'Bad blood',v,txt:`${lastName(f.a.p.name)} & ${lastName(f.b.p.name)}: ${f.why}`,s:'bad'});});
+    }
   }
   const fitO=chem.filter(c=>!c.d&&c.k!=='Glass').reduce((a,c)=>a+c.v,0);
   const fitD=chem.filter(c=>c.d).reduce((a,c)=>a+c.v,0);
@@ -1313,8 +1462,8 @@ const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));
 const erf=x=>{const s=Math.sign(x);x=Math.abs(x);const t=1/(1+.3275911*x);return s*(1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-.284496736)*t+.254829592)*t*Math.exp(-x*x))};
 const Phi=x=>.5*(1+erf(x/Math.SQRT2));
 const SD=12.7; // spread of a final margin around its expectation
-function makeSide(t){const m=teamModel(t.list); return {...t,m};}
-const K={o:.4,d:.35,leg:4,legD:3};
+function makeSide(t){const m=teamModel(t.list,{legend:t.legend}); return {...t,m};}
+const K={o:.4,d:.35,leg:1,legD:.5};
 function expected(A,B,homeA,matchA){
   const fo=t=>t.legend?Math.max(0,t.m.fitO):t.m.fitO, fd=t=>t.legend?Math.max(0,t.m.fitD):t.m.fitD, fr=t=>t.legend?Math.max(0,t.m.fitR):t.m.fitR;
   return 112+K.o*(A.m.OFF-80)-K.d*(B.m.DEF-78)+.12*(A.m.REB-B.m.REB)+fo(A)-fd(B)+.5*(fr(A)-fr(B))+(A.legend?K.leg:0)-(B.legend?K.legD:0)+(homeA?1.8:-1.8)+(matchA||0);
@@ -1399,7 +1548,7 @@ function headline(g,teams){
 const PAPERS=['The Hardwood Herald','The Baseline Bugle','The Paint Gazette','The Fast Break Daily','The Tip-Off Times','The Rim Courier'];
 
 // ---------- state ----------
-const S={view:'home',roster:{},rerolls:1,pack:null,cards:[],lastPack:null,drafted:new Set(),filter:'ALL',season:null,history:[],busy:false,luck:null};
+const S={view:'home',roster:{},rerolls:1,pack:null,cards:[],lastPack:null,drafted:new Set(),filter:'ALL',season:null,history:[],busy:false,luck:null,streak:0,dry:0,mystery:1};
 const $=s=>document.querySelector(s); const $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const initials=n=>n.replace(/[^A-Za-z ]/g,'').split(' ').filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
@@ -1505,30 +1654,44 @@ function renderHome(){
 // ---------- draft ----------
 function openSlots(){return SLOTS.filter(s=>!S.roster[s.id])}
 function eligible(cards){const open=openSlots(); return cards.filter(p=>!S.drafted.has(p.name)&&open.some(s=>fits(p,s)))}
+// A pack holds 6 of the team's 10 cards. Stars pull less often, cool off after you land one, and come due after a dry spell.
+const PACK_SIZE=6;
+function pullWeight(p){let w=p.ovr>=97?.5:p.ovr>=93?.7:p.ovr>=89?.9:1.1;
+  if(p.ovr>=93){w*=[1,.55,.3][Math.min(S.streak,2)]; if(S.dry>=3)w*=2;} return w;}
+function starOdds(){return S.streak>=2?'Ice cold':S.streak?'Cooling':S.dry>=3?'Due':'Normal'}
+function samplePack(players){
+  const pool=[...players], out=[];
+  while(out.length<PACK_SIZE&&pool.length){const ws=pool.map(pullWeight); let r=rnd()*ws.reduce((a,b)=>a+b,0), i=0; while(i<pool.length-1&&(r-=ws[i])>0)i++; out.push(pool.splice(i,1)[0]);}
+  const ok=p=>eligible([p]).length>0; let need=Math.min(2,eligible(players).length)-out.filter(ok).length;
+  for(const p of shuffle(pool.filter(ok))){if(need<=0)break; const j=out.findIndex(x=>!ok(x)); if(j<0)break; out[j]=p; need--;}
+  return out;
+}
 function drawPack(){
   const cands=PACKS.filter(p=>p.id!==S.lastPack&&eligible(p.players).length);
   const pool=cands.length?cands:PACKS.filter(p=>eligible(p.players).length);
-  S.pack=pool[Math.floor(rnd()*pool.length)]; S.lastPack=S.pack.id; S.cards=S.pack.players; S.luck=null;
+  S.pack=pool[Math.floor(rnd()*pool.length)]; S.lastPack=S.pack.id; S.cards=samplePack(S.pack.players); S.luck=null;
   const r=rnd();
   if(r<.14){const el=eligible(S.cards); const pk=el[Math.floor(rnd()*el.length)]; S.cards=S.cards.map(p=>p===pk?momentOf(p):p); S.luck={k:'moment',p:pk};}
   else if(r<.21){S.rerolls++; S.luck={k:'reroll'};}
 }
-function startDraft(){S.roster={};S.rerolls=1;S.drafted=new Set();S.filter='ALL';S.lastPack=null;S.history=[];S.busy=false;drawPack();show('draft');renderDraft(true);}
-function renderDraft(fresh=false){
+function startDraft(){Object.assign(S,{roster:{},rerolls:1,drafted:new Set(),filter:'ALL',lastPack:null,history:[],busy:false,streak:0,dry:0,mystery:1});drawPack();show('draft');renderDraft('rip');}
+// mode: 'rip' opens the physical pack first, 'deal' just deals the cards, anything else re-renders quietly
+function renderDraft(mode=''){
   const pk=S.pack, t=TEAMS[pk.team];
   const filled=SLOTS.length-openSlots().length;
   $('#draft-count').innerHTML=`<span>${filled} of 8 drafted</span><i style="--k:${filled/8}"></i>`;
   const all=eligible(S.cards); const best=all.length?Math.max(...all.map(p=>p.ovr)):0;
-  $('#pack-head').className=fresh?'rip':'';
+  $('#pack-head').className=mode?'ripin':'';
   $('#pack-head').innerHTML=`<div class="pk-team" style="--c1:${t.c1};--c2:${t.c2}"><div class="pk-bg" data-ph="team:${esc(t.name)}"></div><span class="mini">${pk.team}</span><div><small>Team of the decade</small><b>${t.name}</b></div></div>
     <div class="pk-dec"><small>Decade</small><b>${pk.decade}</b></div>
-    <div class="pk-odds"><small>Top card</small><b class="t-${tierOf(best)}">${best}</b></div>
+    <div class="pk-odds"><small>Top card · stars ${starOdds()}</small><b class="t-${tierOf(best)}">${best}</b></div>
     <div class="pk-reroll"><button id="reroll" ${S.rerolls&&!S.busy?'':'disabled'}>Reroll pack</button><small>${S.rerolls} reroll${S.rerolls===1?'':'s'} left</small></div>`;
-  $('#reroll').onclick=async()=>{if(!S.rerolls||S.busy)return;S.rerolls--;S.busy=true;$('#pack-cards').classList.add('sweep');await wait(380);S.busy=false;$('#pack-cards').classList.remove('sweep');drawPack();renderDraft(true);};
+  $('#reroll').onclick=async()=>{if(!S.rerolls||S.busy)return;S.rerolls--;S.busy=true;$('#pack-cards').classList.add('sweep');await wait(380);S.busy=false;$('#pack-cards').classList.remove('sweep');drawPack();renderDraft('rip');};
   const F={ALL:()=>true,GUARDS:p=>p.pos.some(x=>x==='PG'||x==='SG'),WINGS:p=>p.pos.some(x=>x==='SF'||x==='SG'),BIGS:p=>p.pos.some(x=>x==='PF'||x==='C')};
   const ps=all.filter(F[S.filter]).sort((a,b)=>b.ovr-a.ovr);
   $$('#filters button').forEach(b=>b.classList.toggle('on',b.dataset.f===S.filter));
-  $('#pack-cards').innerHTML=ps.map((p,i)=>cardHTML(p,{place:true,deal:fresh?220+i*90:null})).join('')||'<p class="empty">No one in this filter fits an open spot.</p>';
+  const deal=mode==='deal';
+  $('#pack-cards').innerHTML=ps.map((p,i)=>cardHTML(p,{place:true,deal:deal?120+i*80:null})).join('')||'<p class="empty">No one in this filter fits an open spot.</p>';
   $$('#pack-cards .card').forEach(c=>{
     const p=S.cards.find(x=>x.id===c.dataset.id);
     const openPlace=()=>{ if(c.classList.contains('flipped')||S.busy)return;
@@ -1544,40 +1707,114 @@ function renderDraft(fresh=false){
     c.addEventListener('click',e=>{if(e.target.closest('.flip')||e.target.closest('.place'))return; openPlace();});
     c.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target===c)openPlace();});
   });
-  renderBoard('#board',{undo:true});
-  if(fresh){const land=220+ps.length*90+250;
-    if(S.luck?.k==='moment') setTimeout(()=>toast(`<b>Lucky pull!</b> A <em>Moments</em> ${esc(S.luck.p.name)} is in this pack (+3 OVR).`,'gold'),land);
-    if(S.luck?.k==='reroll') setTimeout(()=>toast('<b>Lucky bounce.</b> You found a bonus reroll.','gold'),land);
-    if(best>=96&&S.luck?.k!=='moment') setTimeout(()=>toast(`<b>Big pull.</b> ${TIERNAME[tierOf(best)]} card in the pack.`),land+120);}
+  renderBoard('#board',{undo:true,trade:true});
+  if(mode==='rip'){const luck=S.luck;
+    openPack(S.cards,{team:pk.team,decade:pk.decade,label:t.name}).then(()=>{
+      renderDraft('deal');
+      if(luck?.k==='moment') toast(`<b>Lucky pull!</b> A <em>Moments</em> ${esc(luck.p.name)} is in this pack (+3 OVR).`,'gold');
+      if(luck?.k==='reroll') toast('<b>Lucky bounce.</b> You found a bonus reroll.','gold');});}
 }
 async function place(p,slot,el){
   if(S.busy)return; S.busy=true;
-  S.history.push({slot,pack:S.pack,cards:S.cards,rerolls:S.rerolls,lastPack:S.lastPack});
+  S.history.push({slot,pack:S.pack,cards:S.cards,rerolls:S.rerolls,lastPack:S.lastPack,streak:S.streak,dry:S.dry});
   el?.classList.add('signed'); el&&(el.querySelector('.place').hidden=true);
   S.roster[slot]=p; S.drafted.add(p.name);
+  S.streak=p.ovr>=93?S.streak+1:0; S.dry=p.ovr>=90?0:S.dry+1;
   renderBoard('#board',{undo:false}); $('#board').querySelector(`[data-slot="${slot}"]`)?.classList.add('pop');
   await wait(750); S.busy=false;
   if(openSlots().length===0){renderReveal();show('reveal');return;}
-  drawPack(); renderDraft(true);
+  drawPack(); renderDraft('rip');
 }
 function undoPick(){if(S.busy||!S.history.length)return; const h=S.history.pop();
   const p=S.roster[h.slot]; delete S.roster[h.slot]; S.drafted.delete(p.name);
-  Object.assign(S,{pack:h.pack,cards:h.cards,rerolls:h.rerolls,lastPack:h.lastPack,luck:null}); renderDraft(true);}
-function renderBoard(sel,{undo=false}={}){
+  Object.assign(S,{pack:h.pack,cards:h.cards,rerolls:h.rerolls,lastPack:h.lastPack,streak:h.streak,dry:h.dry,luck:null}); renderDraft('deal');}
+function renderBoard(sel,{undo=false,trade=false}={}){
   const list=rosterList(S.roster), m=teamModel(list);
   const row=s=>{const p=S.roster[s.id]; return `<li data-slot="${s.id}" class="${p?'filled':''} ${s.start?'st':'bn'}"><span class="sl">${s.label}</span>${p?`<span class="who"><b>${esc(p.name)}${p.moment?' ✦':''}</b><small>${esc(era(p))}</small></span><em class="t-${tierOf(p.ovr)}">${p.ovr}</em>`:`<span class="dots">${s.full}</span>`}</li>`};
-  const chem=m.chem.map(c=>`<li class="${c.s}"><b>${c.k}</b><span>${c.txt}</span><em>${c.v>0?'+':''}${c.v}</em></li>`).join('');
+  const chem=m.chem.map(c=>`<li class="${c.s}"><b>${c.k}</b><span>${esc(c.txt)}</span><em>${c.v>0?'+':''}${c.v}</em></li>`).join('');
+  const net=m.chem.reduce((a,c)=>a+c.v,0);
+  const canTrade=trade&&S.mystery>0&&list.length>0;
   $(sel).innerHTML=`<h2>Your Eight</h2><div class="rule"></div>
    <ol class="slots"><li class="grp">Starting five</li>${SLOTS.filter(s=>s.start).map(row).join('')}<li class="grp">Bench</li>${SLOTS.filter(s=>!s.start).map(row).join('')}</ol>
    <div class="ovr-line">Team rating <b>${m.ovr||'—'}</b>${undo&&S.history.length?'<button class="undo" id="undo">↶ Undo last pick</button>':''}</div>
-   ${list.some(x=>x.start)?`<h3 class="chem-h">Chemistry</h3><ul class="chem">${chem}</ul>`:'<p class="hint">Your first pick goes on the board.</p>'}`;
+   ${canTrade?`<button class="mys-btn" id="mys-open"><b>Mystery trade</b><small>Swap a player for a sealed pack. A 99 is possible.</small></button>`:''}
+   ${list.some(x=>x.start)?`<h3 class="chem-h">Chemistry <span class="${net>=0?'up':'down'}">${net>=0?'+':''}${Math.round(net*2)/2}</span></h3><ul class="chem">${chem}</ul>`:'<p class="hint">Your first pick goes on the board.</p>'}`;
   $('#undo')&&($('#undo').onclick=undoPick);
+  $('#mys-open')&&($('#mys-open').onclick=openMystery);
+}
+
+// ---------- the physical pack ----------
+function openPack(cards,{team=null,decade='',label='',pick=null,onPick=null}={}){
+  return new Promise(done=>{
+    const t=team?TEAMS[team]:{c1:'#1d428a',c2:'#c8102e'};
+    const order=[...cards].sort((a,b)=>a.ovr-b.ovr); // best card comes out last
+    const R=$('#rip'); R.hidden=false; document.body.classList.add('noscroll');
+    R.innerHTML=`<div class="rip-stage">
+      <button class="wrapper${pick?' myst':''}" id="wrapper" style="--c1:${t.c1};--c2:${t.c2}" aria-label="Tear open the pack">
+        <span class="w-top"></span><span class="w-body"><small>Dynasty Draft</small><b>${esc(label)}</b><em>${decade?esc(decade)+' series':'Sealed · odds inside'}</em><i>${order.length} cards</i></span></button>
+      <p class="rip-hint">Tap the pack to tear it open</p>
+      <div class="rip-cards" hidden>${order.map((p,i)=>`<div class="pc" role="button" tabindex="0" aria-label="Reveal card ${i+1}" style="--i:${i}"><div class="pc-in"><div class="pc-back"><span>DD</span><small>${esc(decade||'Mystery')}</small></div><div class="pc-front">${cardHTML(p)}</div></div></div>`).join('')}</div>
+      <div class="rip-actions">${pick?'':'<button class="ghost sm" id="rip-skip">Skip opening</button>'}</div></div>`;
+    const pcs=$$('#rip .pc'); let shown=0, closing=false;
+    const acts=()=>{const a=$('#rip .rip-actions');
+      if(shown<order.length) a.innerHTML='<button class="ghost" id="rip-all">Reveal all</button>';
+      else if(pick) a.innerHTML='<p class="rip-hint">Sign one of them. The other two go back in the pile.</p>';
+      else a.innerHTML='<button class="cta" id="rip-go">To the draft board →</button>';
+      $('#rip-all')&&($('#rip-all').onclick=revealAll); $('#rip-go')&&($('#rip-go').onclick=close,$('#rip-go').focus());
+      if(pick&&shown===order.length&&!R.querySelector('.sign')) pcs.forEach((el,i)=>{const b=document.createElement('button'); b.className='cta sign'; b.textContent='Sign · '+pick;
+        b.onclick=()=>{onPick(order[i]); close();}; el.appendChild(b);});};
+    const flip=i=>{const el=pcs[i]; if(el.classList.contains('up'))return; el.classList.add('up'); shown++; const p=order[i];
+      if(p.ovr>=94){el.classList.add('walkout'); toast(`<b>${TIERNAME[tierOf(p.ovr)]} pull!</b> ${esc(p.name)}, ${p.ovr} OVR.`,'gold');}
+      acts();};
+    async function revealAll(){for(let i=0;i<pcs.length;i++)if(!pcs[i].classList.contains('up')){flip(i); await wait(320);}}
+    pcs.forEach((el,i)=>{el.onclick=e=>{if(e.target.closest('.flip,.sign'))return; flip(i);}; el.onkeydown=e=>{if(e.key==='Enter'&&e.target===el)flip(i);};});
+    function close(){if(closing)return; closing=true; R.classList.add('out');
+      setTimeout(()=>{R.hidden=true;R.classList.remove('out');R.innerHTML='';document.body.classList.remove('noscroll');done();},REDUCED?0:320);}
+    $('#rip-skip')&&($('#rip-skip').onclick=close);
+    const W=$('#wrapper'); W.focus();
+    W.onclick=async()=>{if(W.classList.contains('torn'))return; W.classList.add('torn'); $('#rip .rip-hint').hidden=true; await wait(700);
+      W.remove(); $('#rip .rip-cards').hidden=false; acts(); pcs[0]?.focus();};
+  });
+}
+
+// ---------- mystery trade ----------
+const MYST=[[99,.02,'99 overall'],[94,.10,'94–98'],[88,.28,'88–93'],[0,.60,'Under 88']];
+const pickFrom=a=>a[Math.floor(rnd()*a.length)];
+function mysteryCards(slot){
+  const s=SLOTS.find(x=>x.id===slot), used=new Set(), out=[];
+  const ok=p=>fits(p,s)&&!S.drafted.has(p.name)&&!used.has(p.name);
+  for(let k=0;k<3;k++){
+    let r=rnd(), b=0; while(b<MYST.length-1&&(r-=MYST[b][1])>0)b++;
+    let p=null;
+    if(b===0){const nat=ALLP.filter(q=>q.ovr>=99&&ok(q)); // no natural 99 at this spot: the best fit gets a 99 Moments card
+      p=nat.length?pickFrom(nat):(()=>{const top=ALLP.filter(ok).sort((a,c)=>c.ovr-a.ovr).slice(0,4); return top.length?{...momentOf(pickFrom(top)),ovr:99,id:'x99|'+k}:null})();}
+    for(let j=Math.max(1,b);!p&&j<MYST.length;j++){const lo=MYST[j][0], hi=MYST[j-1][0]; const c=ALLP.filter(q=>ok(q)&&q.ovr>=lo&&q.ovr<hi); if(c.length)p=pickFrom(c);}
+    if(p){used.add(p.name); out.push(p);}
+  }
+  return out;
+}
+function openMystery(){
+  const list=rosterList(S.roster);
+  $('#my-odds').innerHTML=MYST.map(([,pc,l])=>`<li><span>${l}</span><b>${Math.round(pc*100)}%</b></li>`).join('')+`<li class="tot"><span>Any 99 in the pack</span><b>${(100*(1-Math.pow(1-MYST[0][1],3))).toFixed(1)}%</b></li>`;
+  $('#my-list').innerHTML=list.map(x=>`<button data-s="${x.slot}"><span>${SLOTS.find(s=>s.id===x.slot).label}</span><b>${esc(x.p.name)}</b><em class="t-${tierOf(x.p.ovr)}">${x.p.ovr}</em></button>`).join('');
+  $('#my-confirm').hidden=true; $('#mystery').hidden=false;
+  $$('#my-list [data-s]').forEach(b=>b.onclick=()=>{$$('#my-list [data-s]').forEach(x=>x.classList.toggle('on',x===b));
+    const p=S.roster[b.dataset.s]; $('#my-confirm').hidden=false;
+    $('#my-confirm').innerHTML=`<p>Trade <b>${esc(p.name)}</b> for a sealed pack? He's gone for good, and you can't undo it.</p><button class="cta" id="my-go">Trade him</button>`;
+    $('#my-go').onclick=()=>runMystery(b.dataset.s);});
+}
+async function runMystery(slot){
+  $('#mystery').hidden=true; const old=S.roster[slot]; delete S.roster[slot]; S.mystery--; S.history=[];
+  const lab=SLOTS.find(s=>s.id===slot).label; renderBoard(S.view==='reveal'?'#reveal-board':'#board');
+  await openPack(mysteryCards(slot),{label:'Mystery Pack',pick:lab,onPick:p=>{S.roster[slot]=p; S.drafted.add(p.name);
+    toast(`<b>Trade done.</b> ${esc(old.name)} out, ${esc(p.name)} (${p.ovr}) in at ${lab}.`,p.ovr>=99?'gold':'');}});
+  if(S.view==='reveal')renderReveal(); else renderDraft();
 }
 
 // ---------- reveal ----------
 function renderReveal(){
   $('#reveal-cards').innerHTML=SLOTS.map((s,i)=>`<div class="rv"><span class="rv-slot">${s.label}</span>${cardHTML(S.roster[s.id],{deal:150+i*120})}</div>`).join('');
-  renderBoard('#reveal-board');
+  renderBoard('#reveal-board',{trade:true});
   $('#odds').innerHTML=`<div class="odds-run"><i></i><span>Running 500 simulated seasons…</span></div>`;
   setTimeout(()=>{const o=simOdds(500); $('#odds').innerHTML=`<div class="eyebrow">Vegas line</div>
     <div class="odds-grid"><div><b data-n="${o.wins}">0</b><small>Projected wins of 16</small></div><div><b data-p="${o.po}">0%</b><small>Playoffs</small></div><div><b data-p="${o.fin}">0%</b><small>Reach Finals</small></div><div class="hl"><b data-p="${o.title}">0%</b><small>Title odds</small></div></div>
@@ -1588,11 +1825,14 @@ function renderReveal(){
 function buildSides(){const sides={YOU:makeSide({id:'YOU',name:'Your Eight',short:'Your Eight',team:null,list:rosterList(S.roster)})};
   LEGENDS.forEach(L=>sides[L.id]=makeSide({id:L.id,name:L.name,short:L.name.replace(/^\d{4}–(\d{2}) /,"'$1 "),team:L.team,legend:true,L,list:L.players.map((p,i)=>({p,min:SLOTS[i].min,start:i<5}))}));
   return sides;}
+// playoff rotations tighten: starters play 40 minutes, the bench shrinks
+const PO_MIN=[40,40,40,40,40,16,14,10];
+function poSides(sides){const o={}; for(const k in sides){const t=sides[k]; o[k]=makeSide({...t,list:t.list.map((x,i)=>({...x,min:PO_MIN[i]??x.min}))});} return o;}
 function rankTable(T){return Object.keys(T).sort((a,b)=>(T[b].w-T[a].w)||((T[b].pf-T[b].pa)-(T[a].pf-T[a].pa)));}
 function simOdds(n){
-  const sides=buildSides(), ids=Object.keys(sides); let W=0,po=0,fin=0,title=0;
-  const g=(a,b)=>playGame(sides[a],sides[b],{...gameOpts(sides[a],sides[b]),fast:true});
-  const ser=(a,b)=>{let wa=0,wb=0,i=0; while(wa<4&&wb<4){const h=[1,1,0,0,1,0,1][i++]; const r=h?g(a,b):g(b,a); if(r.win===a)wa++;else wb++;} return wa===4?a:b;};
+  const sides=buildSides(), pos=poSides(sides), ids=Object.keys(sides); let W=0,po=0,fin=0,title=0;
+  const g=(a,b,X=sides)=>playGame(X[a],X[b],{...gameOpts(X[a],X[b]),fast:true});
+  const ser=(a,b)=>{let wa=0,wb=0,i=0; while(wa<4&&wb<4){const h=[1,1,0,0,1,0,1][i++]; const r=h?g(a,b,pos):g(b,a,pos); if(r.win===a)wa++;else wb++;} return wa===4?a:b;};
   for(let k=0;k<n;k++){const T={}; ids.forEach(i=>T[i]={w:0,l:0,pf:0,pa:0});
     for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++)[g(ids[i],ids[j]),g(ids[j],ids[i])].forEach(r=>{const h=T[r.home],a=T[r.away];h.pf+=r.hs;h.pa+=r.as;a.pf+=r.as;a.pa+=r.hs;if(r.win===r.home){h.w++;a.l++}else{a.w++;h.l++}});
     W+=T.YOU.w; const st=rankTable(T).slice(0,4); if(!st.includes('YOU'))continue; po++;
@@ -1702,7 +1942,7 @@ function stepSeries(s){ // play the next game of a series; returns it
 function poActive(){const P=S.season.po; return P.fin?[P.fin]:P.semis}
 function userSeries(){return poActive().find(s=>!s.winner&&(s.a==='YOU'||s.b==='YOU'))}
 function startPlayoffs(){
-  const Z=S.season; Z.phase='playoffs'; const st=standings().slice(0,4);
+  const Z=S.season; Z.phase='playoffs'; Z.sides=poSides(Z.sides); const st=standings().slice(0,4);
   Z.po={seeds:st,semis:[mkSeries(st[0],st[3],'Semifinal'),mkSeries(st[1],st[2],'Semifinal')],fin:null};
   toast(st.includes('YOU')?`<b>Playoffs.</b> You're the ${st.indexOf('YOU')+1} seed.`:'<b>Missed the cut.</b> Watch the playoffs from the couch.');
   renderSeason();
@@ -1852,13 +2092,16 @@ function boot(){
   $$('[data-go="banners"]').forEach(b=>b.onclick=()=>{renderBanners();show('banners')});
   $$('[data-go="how"]').forEach(b=>b.onclick=()=>{$('#how').hidden=false});
   $('#how-close').onclick=()=>{$('#how').hidden=true};
+  $('#my-close').onclick=()=>{$('#mystery').hidden=true};
+  $('#mystery').addEventListener('click',e=>{if(e.target.id==='mystery')$('#mystery').hidden=true});
+  const tk=LEGENDS.map(L=>`<span><b>${esc(L.name)}</b> ${L.record}</span>`).join('')+`<span><b>${PACKS.length}</b> decade packs</span><span><b>${ALLP.length}</b> player cards</span>`; $('#ticker').innerHTML=tk+tk;
   $('#how').addEventListener('click',e=>{if(e.target.id==='how')$('#how').hidden=true});
   $('#how-start').onclick=()=>{$('#how').hidden=true;startDraft()};
   $$('#filters button').forEach(b=>b.onclick=()=>{S.filter=b.dataset.f;renderDraft()});
   $('#begin').onclick=startSeason;
   $('#redraft').onclick=startDraft;
   $('#again').onclick=startDraft;
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#how').hidden=true});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('#how').hidden=true;$('#mystery').hidden=true}});
 }
 boot();
 </script>
