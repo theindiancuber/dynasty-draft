@@ -10,4 +10,5 @@ Draft an eight-man NBA rotation from team-of-the-decade packs, then take it thro
 - **Mystery trade**: once per draft, swap a player for a sealed 3-card pack at his spot. Each card has a 2% chance of being a 99 overall.
 - **Luck**: some packs hold a Moments card (+3 OVR) or a bonus reroll. Players have hot and cold nights, and every game shows its pre-game odds. The season tracks how many wins you've banked above or below those odds.
 - **Flow**: a stepper in the header tracks Draft → Rotation → Season → Playoffs → Banner. Packs turn their own cards over, worst to best; tap a revealed player to draft him, or switch on Quick packs to skip the opening. On phones your eight docks to the bottom of the screen while you draft.
+- **Extras**: a quick guided tour on your first draft and first season, optional sound (synthesized in the browser, off by default), swipe-to-browse packs on phones, and a shareable 1080×1350 card of your run from the result screen.
 - **Games**: watch each game live (play-by-play, quarter scores, live win probability) or sim ahead. Full box scores with FG/3P/FT, REB, AST, STL, BLK and TO.
