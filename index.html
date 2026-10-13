@@ -339,7 +339,7 @@ h3.sub{font:800 22px/1 var(--f-display);text-transform:uppercase;letter-spacing:
 footer.site{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);font-size:12.5px}
 
 /* motion + flow */
-.view:not([hidden]){animation:viewin .4s ease both}
+.view:not([hidden]){animation:viewin .4s ease backwards}
 @keyframes viewin{from{opacity:0;transform:translateY(8px)}}
 body.noscroll{overflow:hidden}
 .cta small{display:block;font:500 10px/1 var(--f-mono);letter-spacing:.1em;margin-top:5px;opacity:.75}
@@ -544,12 +544,185 @@ body{background:radial-gradient(1200px 500px at 50% -200px,rgba(29,66,138,.45),t
   #r-log li{grid-template-columns:70px minmax(0,1fr) auto 20px}
 }
 </style>
+<style>
+/* Polish pass: depth on the cards, a sense of where you are in the run, and less waiting between picks. */
+:root{--ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.3,1.5,.5,1)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.05;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+::selection{background:var(--nba-red);color:#fff}
+
+/* header: run stepper, ticker only on the landing page */
+.steps{display:flex;gap:2px;list-style:none;margin:0 auto;padding:0;counter-reset:st}
+body[data-view=home] .steps,body[data-view=banners] .steps{display:none}
+.steps li{counter-increment:st;display:flex;align-items:center;gap:6px;padding:6px 10px;font:600 11px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:#5d6f96;position:relative}
+.steps li::before{content:counter(st);display:grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1px solid currentColor;font-size:10px;letter-spacing:0}
+.steps li+li::after{content:"";position:absolute;left:-6px;top:50%;width:10px;height:1px;background:var(--line)}
+.steps li.done{color:var(--muted)}.steps li.done::before{content:"✓";background:var(--line);border-color:var(--line);color:var(--chalk)}
+.steps li.on{color:#fff}.steps li.on::before{background:var(--nba-red);border-color:var(--nba-red);color:#fff;box-shadow:0 0 0 4px rgba(200,16,46,.25)}
+.top nav{margin-left:auto}
+.steps+nav{margin-left:0}
+body[data-view=home] .steps+nav,body[data-view=banners] .steps+nav{margin-left:auto}
+body:not([data-view=home]) .ticker{display:none}
+.top nav button{border-radius:6px;transition:color .2s,background-color .2s}
+.top nav button:hover{background:rgba(255,255,255,.06)}
+
+/* buttons: press feedback and a light sweep */
+.cta,.ghost,.pk-reroll button,.mys-btn,#filters button,.place [data-s],.my-list button{transition:transform .15s var(--ease),filter .2s,background-color .2s,border-color .2s,box-shadow .25s,color .2s}
+.cta:active,.ghost:active,.pk-reroll button:active,.mys-btn:active,#filters button:active,.place [data-s]:active{transform:scale(.96)}
+.cta{position:relative;overflow:hidden;isolation:isolate}
+.cta::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.38) 50%,transparent 70%);transform:translateX(-130%);transition:transform .7s var(--ease)}
+.cta:hover::after{transform:translateX(130%)}
+.cta:hover{box-shadow:0 0 0 1px #ff5168 inset,0 12px 30px -10px var(--nba-red)}
+.ghost{background:rgba(7,17,42,.55);backdrop-filter:blur(6px)}
+.ghost:hover{background:rgba(255,255,255,.06);border-color:var(--muted)}
+
+/* hero: CTA above the fold, copy off the hardwood */
+.hero .wrap{padding-block:40px 52px;gap:24px}
+.hero h1{font-size:clamp(52px,6.6vw,94px);margin:10px 0 14px}
+.hero::before{height:36%}
+.hero .court{height:36%}
+.hero p.lede{max-width:52ch;color:#dde4f0}
+#hero-cards{animation:float 7s ease-in-out infinite;perspective:1400px}
+#hero-cards .card{--w:178px;transition:transform .5s var(--ease)}
+#hero-cards:hover .card:nth-child(1){transform:rotate(-12deg) translate(-18px,16px)}
+#hero-cards:hover .card:nth-child(3){transform:rotate(12deg) translate(18px,16px)}
+@keyframes float{50%{transform:translateY(-10px)}}
+
+/* spotlight panels */
+.leg,.ser,#sched li,.odds-grid>div,.scoreboard>div:not(#s-actions),.hstats>div,.pack{position:relative;isolation:isolate}
+.leg::after,.ser::after,#sched li::after,.odds-grid>div::after,.scoreboard>div:not(#s-actions)::after,.hstats>div::after,.pack::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .35s;
+  background:radial-gradient(320px circle at var(--sx,50%) var(--sy,50%),rgba(140,170,255,.12),transparent 65%)}
+.leg:hover::after,.ser:hover::after,#sched li:hover::after,.odds-grid>div:hover::after,.scoreboard>div:hover::after,.hstats>div:hover::after,.pack:hover::after{opacity:1}
+.leg{transition:transform .3s var(--ease),border-color .3s,box-shadow .3s}
+.leg:hover{transform:translateY(-3px);box-shadow:0 18px 40px -22px #000,0 0 0 1px color-mix(in srgb,var(--c1) 60%,transparent)}
+
+/* cards: tilt toward the pointer, glare follows it */
+.card .inner{transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))}
+.card.flipped .inner{transform:rotateY(180deg)}
+.card.tilt .inner{transition:transform .14s ease-out}
+.card.tilt{z-index:4}
+.card.tilt .front{box-shadow:0 0 0 1px rgba(255,255,255,.45) inset,0 0 0 .25em rgba(0,0,0,.25) inset,0 26px 40px -18px #000}
+.glare{position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;opacity:0;transition:opacity .35s;mix-blend-mode:overlay;
+  background:radial-gradient(farthest-corner circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.7),rgba(255,255,255,.12) 30%,transparent 62%)}
+.card.tilt .glare{opacity:1}
+.card[tabindex="0"]:hover{transform:translateY(-6px)}
+.place{backdrop-filter:blur(8px);background:rgba(7,17,42,.9);animation:rise .25s var(--spring)}
+.place [data-s]:hover{filter:brightness(1.15);box-shadow:0 6px 16px -6px var(--nba-red)}
+
+/* draft rail: pick count, eight slots, team rating */
+.count{display:grid!important;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;padding:20px 0 0;text-align:left}
+.dc-n{font:600 12px var(--f-mono);letter-spacing:.14em;color:var(--muted)}
+.dc-n b,.dc-r b{font:900 26px/1 var(--f-display);color:#fff;letter-spacing:.02em;margin:0 2px;vertical-align:-3px}
+.dc-r{font:600 12px var(--f-mono);letter-spacing:.14em;color:var(--muted)}
+.pips{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;max-width:520px;justify-self:center;width:100%}
+.pips li{display:grid;height:30px}
+.pips li:nth-child(5){margin-right:8px}
+.pips i,.pips b{display:grid;place-items:center;border-radius:6px;font:700 11px var(--f-mono);font-style:normal;letter-spacing:.06em}
+.pips i{position:static;width:auto;height:auto;background:none;overflow:visible;border:1px dashed var(--line);color:#5d6f96}
+.pips i::after{display:none}
+.pips b{color:#1b1407;animation:pipin .5s var(--spring)}
+@keyframes pipin{from{transform:scale(.4);opacity:0}}
+#filters{align-items:center}
+.qp{margin-left:auto;display:flex;align-items:center;gap:6px;font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none}
+.qp input{appearance:none;width:30px;height:18px;border-radius:999px;background:#0b1019;border:1px solid var(--line);position:relative;margin:0;cursor:pointer;transition:background-color .2s}
+.qp input::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--muted);transition:transform .25s var(--spring),background-color .2s}
+.qp input:checked{background:var(--nba-blue)}.qp input:checked::after{transform:translateX(12px);background:#fff}
+.qp input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+#filters button:hover:not(.on){color:var(--chalk);border-color:var(--muted)}
+
+/* pack grid: three cards that fill the panel */
+#pack-cards{container-type:inline-size;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 16px}
+#pack-cards .card{--w:min(224px,calc((100cqi - 32px) / 3))}
+#pack-cards .empty{grid-column:1/-1}
+
+/* pack opening: one row of six, a charge before the best card, pick straight from the reveal */
+.rip-cards{max-width:1240px}
+.pc,.pc .card{--w:min(180px,calc((100vw - 110px) / 6))}
+.pc.charge .pc-in{animation:charge .5s ease-in-out infinite}
+.pc.charge{filter:drop-shadow(0 0 22px rgba(242,201,76,.75))}
+@keyframes charge{0%,100%{transform:rotateY(180deg)}50%{transform:rotateY(180deg) translateY(-8px) scale(1.04)}}
+.pc.up.can{transition:transform .25s var(--ease)}
+.pc.up.can:hover{transform:translateY(-8px)}
+.pc.up.can .card{cursor:pointer}
+.pc-tag{position:absolute;left:50%;top:-12px;transform:translateX(-50%);z-index:5;opacity:0;transition:opacity .3s;font:600 10px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;background:#0d1b3a;border:1px solid var(--line);color:var(--muted);padding:3px 8px;border-radius:999px}
+.pc.up.nofit .pc-tag{opacity:1}
+.pc.up.nofit .pc-front{filter:grayscale(.75) brightness(.55);transition:filter .5s}
+.rip-hint.still{animation:none;color:var(--chalk);width:100%}
+.rip-actions{align-items:center}
+
+/* reveal + season */
+.odds-grid>div,.scoreboard>div:not(#s-actions){transition:border-color .3s}
+.scoreboard b{color:#fff;text-shadow:0 0 14px rgba(120,160,255,.35)}
+#s-diff.up{color:var(--win);text-shadow:0 0 12px rgba(60,207,142,.4)}#s-diff.down{color:var(--loss);text-shadow:0 0 12px rgba(255,90,95,.4)}
+#sched li{transition:transform .25s var(--ease)}
+#sched li:hover{transform:translateY(-2px)}
+#sched li.next{outline:0;box-shadow:0 0 0 2px var(--nba-red);animation:nextring 2s ease-in-out infinite}
+@keyframes nextring{50%{box-shadow:0 0 0 2px var(--nba-red),0 0 0 7px rgba(200,16,46,.18)}}
+.board .slots li.filled{transition:background-color .2s}
+.board .slots li.filled:hover{background:rgba(0,0,0,.34)}
+
+/* live game */
+.lv-tm span.bump{animation:bump .45s var(--spring)}
+@keyframes bump{40%{transform:scale(1.18);color:#fff}}
+.lv-wp i{background:var(--ca,#2a344a)}
+.lv-wp i b{background:var(--ch,var(--gold));box-shadow:-2px 0 0 #05070b}
+.live-card{box-shadow:0 40px 80px -30px #000,0 0 0 1px rgba(255,255,255,.04) inset}
+.lv-feed li:first-child:not(.mute){box-shadow:inset 3px 0 0 var(--gold)}
+
+/* overlays */
+.modal-card,.live-card{animation:popin .35s var(--ease)}
+.modal{backdrop-filter:blur(6px)}
+.toast{backdrop-filter:blur(10px);background:rgba(13,27,58,.92)}
+
+@media (prefers-reduced-motion:reduce){#hero-cards,.pc.charge .pc-in,#sched li.next,.pips b{animation:none!important}.cta::after{display:none}}
+
+@media (max-width:960px){
+  .steps{order:3;flex-basis:100%;justify-content:center;margin:0 0 8px}
+  .top .wrap{row-gap:0}
+}
+@media (max-width:700px){
+  .top .wrap{min-height:52px;gap:8px}
+  .brand small{display:none}
+  .brand b{font-size:21px}
+  .top nav button{padding:8px 8px;font-size:11px;letter-spacing:.08em}
+  .top nav{margin-left:auto}
+  .lg{display:none}
+  .steps li{padding:4px 5px;font-size:9.5px;letter-spacing:.06em;gap:4px}
+  .steps li::before{width:15px;height:15px;font-size:9px}
+  .steps li+li::after{display:none}
+  .hero h1{font-size:clamp(44px,13vw,64px)}
+  /* the draft rail docks to the bottom so your eight is always in view */
+  body[data-view=draft] main{padding-bottom:84px}
+  body[data-view=draft] #toasts,body[data-view=season] #toasts{bottom:96px}
+  .count{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:rgba(7,17,42,.95);backdrop-filter:blur(12px);border-top:1px solid var(--line);gap:10px;grid-template-columns:1fr auto}
+  .dc-n{display:none}
+  .count{cursor:pointer}
+  .pips{gap:4px}.pips li{height:28px}.pips li:nth-child(5){margin-right:4px}
+  .pips i{font-size:9px;letter-spacing:0}
+  .dc-r b{font-size:22px}
+  #pack-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 10px}
+  #pack-cards .card{--w:calc((100cqi - 10px) / 2)}
+  .pc,.pc .card{--w:min(150px,calc((100vw - 52px) / 2))}
+  .qp{margin-left:0}
+  /* season: compact scoreboard, primary action pinned to the thumb */
+  .scoreboard{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:16px}
+  .scoreboard>div:not(#s-actions){padding:8px}
+  .scoreboard small{font-size:8.5px;letter-spacing:.1em}
+  .scoreboard b{font-size:20px}
+  body[data-view=season] main{padding-bottom:96px}
+  #s-actions{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid!important;grid-template-columns:minmax(0,1fr) auto;padding:10px 14px calc(10px + env(safe-area-inset-bottom))!important;background:rgba(7,17,42,.95)!important;backdrop-filter:blur(12px);border-top:1px solid var(--line)!important}
+  #s-actions .cta{padding:12px 14px;font-size:16px}
+  #s-actions .ghost{padding:12px;font-size:13px}
+  #sched{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+</style>
 </head>
 <body>
 
 <header class="top"><div class="wrap">
   <button class="brand" data-go="home"><i class="mark" aria-hidden="true"></i><b>DYNASTY DRAFT</b><small>All-time NBA</small></button>
-  <nav><button data-go="banners">Banners</button><button data-go="how">How it works</button></nav>
+  <ol class="steps" id="steps" aria-label="Your run"><li>Draft</li><li>Rotation</li><li>Season</li><li>Playoffs</li><li>Banner</li></ol>
+  <nav><button data-go="banners">Banners</button><button data-go="how">How<span class="lg"> it works</span></button></nav>
 </div><div class="ticker" aria-hidden="true"><div class="tk-in" id="ticker"></div></div></header>
 
 <main>
@@ -578,7 +751,7 @@ body{background:radial-gradient(1200px 500px at 50% -200px,rgba(29,66,138,.45),t
     <div class="draft-grid">
       <section class="pack" aria-label="Current pack">
         <div id="pack-head"></div>
-        <div id="filters"><button data-f="ALL">All</button><button data-f="GUARDS">Guards</button><button data-f="WINGS">Wings</button><button data-f="BIGS">Bigs</button></div>
+        <div id="filters"><button data-f="ALL">All</button><button data-f="GUARDS">Guards</button><button data-f="WINGS">Wings</button><button data-f="BIGS">Bigs</button><label class="qp" title="Skip the pack-opening animation"><input type="checkbox" id="qp"> Quick packs</label></div>
         <div id="pack-cards"></div>
       </section>
       <aside class="board" id="board" aria-label="Your eight"></aside>
@@ -1560,7 +1733,9 @@ const pc0=x=>Math.round(x*100)+'%';
 const wait=ms=>new Promise(r=>setTimeout(r,REDUCED?Math.min(ms,60):ms));
 const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function show(v){S.view=v; $$('.view').forEach(e=>e.hidden=e.id!=='v-'+v); window.scrollTo({top:0,behavior:'auto'});}
+function show(v){S.view=v; document.body.dataset.view=v; $$('.view').forEach(e=>e.hidden=e.id!=='v-'+v); window.scrollTo({top:0,behavior:'auto'}); steps();}
+function steps(){const v=S.view, i={draft:0,reveal:1,season:S.season?.phase==='playoffs'?3:2,result:4}[v];
+  $$('#steps li').forEach((li,k)=>{li.className=k<i?'done':k===i?'on':''; li.toggleAttribute('aria-current',k===i);});}
 function toast(html,cls=''){const t=document.createElement('div'); t.className='toast '+cls; t.innerHTML=html; $('#toasts').appendChild(t);
   setTimeout(()=>t.classList.add('out'),3400); setTimeout(()=>t.remove(),3900);}
 function countUp(el,to,{dur=900,fmt=x=>Math.round(x)}={}){const t0=performance.now();
@@ -1612,7 +1787,7 @@ function cardHTML(p,{place=false,deal=null}={}){
   return `<article class="card t-${tier}${p.moment?' moment':''}${deal!=null?' deal':''}" ${deal!=null?`style="--d:${deal}ms"`:''} data-id="${esc(p.id)}" tabindex="${place?0:-1}" aria-label="${esc(p.name)}, ${p.pos.join('/')}, ${esc(era(p))}, overall ${p.ovr}">
   <div class="inner">
    <div class="face front" style="--c1:${t.c1};--c2:${t.c2}">
-    <div class="foil"></div>
+    <div class="foil"></div><div class="glare"></div>
     <header><div class="ovr"><b>${p.ovr}</b><small>${p.pos.join('/')}</small></div><div class="tg"><span class="tier">${TIERNAME[tier]}</span>${p.moment?'<span class="mom">Moments</span>':''}</div></header>
     <div class="ph" data-ph="${esc(p.name)}"><span class="wm">${p.decade.slice(2)}</span><span class="mono">${initials(p.name)}</span><em>${p.team}</em></div>
     <h3>${esc(p.name)}</h3>
@@ -1634,15 +1809,14 @@ function cardHTML(p,{place=false,deal=null}={}){
   </div></article>`;
 }
 document.addEventListener('click',e=>{
-  const f=e.target.closest('.flip'); if(f){e.stopPropagation(); f.closest('.card').classList.toggle('flipped'); return;}
+  const f=e.target.closest('.flip'); if(f){e.stopPropagation(); const c=f.closest('.card'); c.classList.toggle('flipped'); untilt(c); return;}
 });
 
 // ---------- home ----------
 function renderHome(){
   const pick=(n,d)=>ALLP.find(p=>p.name===n&&p.decade===d);
   $('#hero-cards').innerHTML=[pick('Magic Johnson','1980s'),pick('Michael Jordan','1990s'),pick('Stephen Curry','2010s')].map(p=>cardHTML(p)).join('');
-  $('#stat-packs').textContent=PACKS.length;
-  $('#stat-players').textContent=ALLP.length;
+  countUp($('#stat-packs'),PACKS.length); countUp($('#stat-players'),ALLP.length,{dur:1200});
   $('#legends').innerHTML=LEGENDS.map(L=>{const t=TEAMS[L.team]; return `<article class="leg" style="--c1:${t.c1};--c2:${t.c2}">
     <header><span class="mini">${L.team}</span><div><h3>${L.name}</h3><p>${L.record}</p></div></header>
     <div class="style">${L.style}</div><p class="blurb">${L.blurb}</p>
@@ -1679,7 +1853,8 @@ function startDraft(){Object.assign(S,{roster:{},rerolls:1,drafted:new Set(),fil
 function renderDraft(mode=''){
   const pk=S.pack, t=TEAMS[pk.team];
   const filled=SLOTS.length-openSlots().length;
-  $('#draft-count').innerHTML=`<span>${filled} of 8 drafted</span><i style="--k:${filled/8}"></i>`;
+  const tm=teamModel(rosterList(S.roster));
+  $('#draft-count').innerHTML=`<span class="dc-n">${filled<8?`Pick <b>${filled+1}</b> of 8`:'Eight drafted'}</span><ol class="pips">${SLOTS.map(s=>{const p=S.roster[s.id]; return `<li title="${s.full}">${p?`<b class="t-${tierOf(p.ovr)}">${p.ovr}</b>`:`<i>${s.label}</i>`}</li>`}).join('')}</ol><span class="dc-r">Team <b>${tm.ovr||'—'}</b></span>`;
   const all=eligible(S.cards); const best=all.length?Math.max(...all.map(p=>p.ovr)):0;
   $('#pack-head').className=mode?'ripin':'';
   $('#pack-head').innerHTML=`<div class="pk-team" style="--c1:${t.c1};--c2:${t.c2}"><div class="pk-bg" data-ph="team:${esc(t.name)}"></div><span class="mini">${pk.team}</span><div><small>Team of the decade</small><b>${t.name}</b></div></div>
@@ -1699,7 +1874,7 @@ function renderDraft(mode=''){
       const pl=c.querySelector('.place'); const opts=openSlots().filter(s=>fits(p,s));
       pl.innerHTML=opts.length===1?`<button class="one" data-s="${opts[0].id}">Draft · ${opts[0].label}</button><button class="cancel">Cancel</button>`
         :`<small>Place at</small><div>${opts.map(s=>`<button data-s="${s.id}">${s.label}</button>`).join('')}</div><button class="cancel">Cancel</button>`;
-      pl.hidden=false;
+      pl.hidden=false; untilt(c);
       pl.querySelectorAll('[data-s]').forEach(b=>b.onclick=ev=>{ev.stopPropagation(); place(p,b.dataset.s,c);});
       pl.querySelector('.cancel').onclick=ev=>{ev.stopPropagation(); pl.hidden=true;};
       pl.querySelector('[data-s]').focus();
@@ -1708,11 +1883,13 @@ function renderDraft(mode=''){
     c.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target===c)openPlace();});
   });
   renderBoard('#board',{undo:true,trade:true});
-  if(mode==='rip'){const luck=S.luck;
-    openPack(S.cards,{team:pk.team,decade:pk.decade,label:t.name}).then(()=>{
-      renderDraft('deal');
+  if(mode==='rip'){const luck=S.luck, quick=QUICK();
+    const after=id=>{if(id)S.filter='ALL'; renderDraft('deal');
+      if(quick){const top=S.cards.reduce((a,b)=>b.ovr>a.ovr?b:a); if(top.ovr>=94)toast(`<b>${TIERNAME[tierOf(top.ovr)]} pull!</b> ${esc(top.name)}, ${top.ovr} OVR.`,'gold');}
       if(luck?.k==='moment') toast(`<b>Lucky pull!</b> A <em>Moments</em> ${esc(luck.p.name)} is in this pack (+3 OVR).`,'gold');
-      if(luck?.k==='reroll') toast('<b>Lucky bounce.</b> You found a bonus reroll.','gold');});}
+      if(luck?.k==='reroll') toast('<b>Lucky bounce.</b> You found a bonus reroll.','gold');
+      const c=id&&$(`#pack-cards .card[data-id="${CSS.escape(id)}"]`); if(c){c.scrollIntoView({block:'center',behavior:REDUCED?'auto':'smooth'}); c.click();}};
+    if(quick) after(); else openPack(S.cards,{team:pk.team,decade:pk.decade,label:t.name,canDraft:p=>eligible([p]).length>0}).then(after);}
 }
 async function place(p,slot,el){
   if(S.busy)return; S.busy=true;
@@ -1744,7 +1921,7 @@ function renderBoard(sel,{undo=false,trade=false}={}){
 }
 
 // ---------- the physical pack ----------
-function openPack(cards,{team=null,decade='',label='',pick=null,onPick=null}={}){
+function openPack(cards,{team=null,decade='',label='',pick=null,onPick=null,canDraft=null}={}){
   return new Promise(done=>{
     const t=team?TEAMS[team]:{c1:'#1d428a',c2:'#c8102e'};
     const order=[...cards].sort((a,b)=>a.ovr-b.ovr); // best card comes out last
@@ -1753,27 +1930,35 @@ function openPack(cards,{team=null,decade='',label='',pick=null,onPick=null}={})
       <button class="wrapper${pick?' myst':''}" id="wrapper" style="--c1:${t.c1};--c2:${t.c2}" aria-label="Tear open the pack">
         <span class="w-top"></span><span class="w-body"><small>Dynasty Draft</small><b>${esc(label)}</b><em>${decade?esc(decade)+' series':'Sealed · odds inside'}</em><i>${order.length} cards</i></span></button>
       <p class="rip-hint">Tap the pack to tear it open</p>
-      <div class="rip-cards" hidden>${order.map((p,i)=>`<div class="pc" role="button" tabindex="0" aria-label="Reveal card ${i+1}" style="--i:${i}"><div class="pc-in"><div class="pc-back"><span>DD</span><small>${esc(decade||'Mystery')}</small></div><div class="pc-front">${cardHTML(p)}</div></div></div>`).join('')}</div>
+      <div class="rip-cards" hidden>${order.map((p,i)=>`<div class="pc${canDraft?(canDraft(p)?' can':' nofit'):''}" role="button" tabindex="0" aria-label="Reveal card ${i+1}" style="--i:${i}">${canDraft&&!canDraft(p)?'<span class="pc-tag">No open spot</span>':''}<div class="pc-in"><div class="pc-back"><span>DD</span><small>${esc(decade||'Mystery')}</small></div><div class="pc-front">${cardHTML(p)}</div></div></div>`).join('')}</div>
       <div class="rip-actions">${pick?'':'<button class="ghost sm" id="rip-skip">Skip opening</button>'}</div></div>`;
-    const pcs=$$('#rip .pc'); let shown=0, closing=false;
+    const pcs=$$('#rip .pc'); let shown=0, closing=false, running=false, fast=false;
     const acts=()=>{const a=$('#rip .rip-actions');
-      if(shown<order.length) a.innerHTML='<button class="ghost" id="rip-all">Reveal all</button>';
+      if(shown<order.length){if(!$('#rip-all'))a.innerHTML='<button class="ghost" id="rip-all">Show all</button>';}
       else if(pick) a.innerHTML='<p class="rip-hint">Sign one of them. The other two go back in the pile.</p>';
-      else a.innerHTML='<button class="cta" id="rip-go">To the draft board →</button>';
-      $('#rip-all')&&($('#rip-all').onclick=revealAll); $('#rip-go')&&($('#rip-go').onclick=close,$('#rip-go').focus());
+      else a.innerHTML=`${canDraft?'<p class="rip-hint still">Tap a player to draft him</p>':''}<button class="cta" id="rip-go">To the draft board →</button>`;
+      $('#rip-all')&&($('#rip-all').onclick=()=>{fast=true; revealAll();}); $('#rip-go')&&($('#rip-go').onclick=()=>close(),$('#rip-go').focus());
       if(pick&&shown===order.length&&!R.querySelector('.sign')) pcs.forEach((el,i)=>{const b=document.createElement('button'); b.className='cta sign'; b.textContent='Sign · '+pick;
         b.onclick=()=>{onPick(order[i]); close();}; el.appendChild(b);});};
     const flip=i=>{const el=pcs[i]; if(el.classList.contains('up'))return; el.classList.add('up'); shown++; const p=order[i];
+      el.setAttribute('aria-label',`${p.name}, ${p.ovr} overall${canDraft?(canDraft(p)?'. Press Enter to draft':'. No open spot'):''}`);
       if(p.ovr>=94){el.classList.add('walkout'); toast(`<b>${TIERNAME[tierOf(p.ovr)]} pull!</b> ${esc(p.name)}, ${p.ovr} OVR.`,'gold');}
       acts();};
-    async function revealAll(){for(let i=0;i<pcs.length;i++)if(!pcs[i].classList.contains('up')){flip(i); await wait(320);}}
-    pcs.forEach((el,i)=>{el.onclick=e=>{if(e.target.closest('.flip,.sign'))return; flip(i);}; el.onkeydown=e=>{if(e.key==='Enter'&&e.target===el)flip(i);};});
-    function close(){if(closing)return; closing=true; R.classList.add('out');
-      setTimeout(()=>{R.hidden=true;R.classList.remove('out');R.innerHTML='';document.body.classList.remove('noscroll');done();},REDUCED?0:320);}
-    $('#rip-skip')&&($('#rip-skip').onclick=close);
+    // cards turn themselves over, worst to best; the last one holds a beat before it turns
+    async function revealAll(){if(running)return; running=true;
+      for(let i=0;i<pcs.length;i++){if(closing)break; if(pcs[i].classList.contains('up'))continue;
+        if(i===pcs.length-1&&pcs.length>1&&!fast){pcs[i].classList.add('charge'); await wait(order[i].ovr>=90?1000:550); pcs[i].classList.remove('charge');}
+        flip(i); if(!fast)await wait(300);}
+      running=false;}
+    const choose=i=>{if(!pick&&canDraft?.(order[i]))close(order[i].id);};
+    pcs.forEach((el,i)=>{el.onclick=e=>{if(e.target.closest('.flip,.sign'))return; el.classList.contains('up')?choose(i):flip(i);};
+      el.onkeydown=e=>{if(e.key==='Enter'&&e.target===el)el.classList.contains('up')?choose(i):flip(i);};});
+    function close(id=null){if(closing)return; closing=true; R.classList.add('out');
+      setTimeout(()=>{R.hidden=true;R.classList.remove('out');R.innerHTML='';document.body.classList.remove('noscroll');done(id);},REDUCED?0:320);}
+    $('#rip-skip')&&($('#rip-skip').onclick=()=>close());
     const W=$('#wrapper'); W.focus();
     W.onclick=async()=>{if(W.classList.contains('torn'))return; W.classList.add('torn'); $('#rip .rip-hint').hidden=true; await wait(700);
-      W.remove(); $('#rip .rip-cards').hidden=false; acts(); pcs[0]?.focus();};
+      W.remove(); $('#rip .rip-cards').hidden=false; acts(); pcs[0]?.focus({preventScroll:true}); await wait(500+pcs.length*110); revealAll();};
   });
 }
 
@@ -1891,7 +2076,7 @@ function renderSeason(){
   const Z=S.season, T=Z.table, U=T.YOU, st=standings();
   $('#s-record').textContent=`${U.w}–${U.l}`;
   $('#s-standing').textContent=`${st.indexOf('YOU')+1} / 9`;
-  $('#s-diff').textContent=(U.pf-U.pa>=0?'+':'')+(U.pf-U.pa);
+  $('#s-diff').textContent=(U.pf-U.pa>=0?'+':'')+(U.pf-U.pa); $('#s-diff').className=U.pf>U.pa?'up':U.pf<U.pa?'down':'';
   const played=Z.ugames.length, luck=Z.ugames.filter(g=>g.win==='YOU').length-Z.xw;
   $('#s-luck').textContent=played?(luck>=0?'+':'−')+Math.abs(luck).toFixed(1):'0.0';
   $('#s-luck').className=played?(luck>=.5?'up':luck<=-.5?'down':''):'';
@@ -1925,7 +2110,7 @@ function renderSeason(){
   $('#table tbody').innerHTML=st.map((k,i)=>{const r=T[k];const d=r.pf-r.pa;return `<tr class="${k==='YOU'?'you':''} ${i<4?'po':''}"><td>${i+1}</td><td>${esc(teamLabel(k))}</td><td>${r.w+r.l}</td><td>${r.w}</td><td>${r.l}</td><td>${d>=0?'+':''}${d}</td></tr>`}).join('');
   const recent=[...Z.ugames].reverse();
   $('#clips').innerHTML=recent.length?recent.map((g,i)=>clipping(g,i)).join(''):'<p class="empty">Your first series is up next. Tip off to watch it live; every game prints in the papers here.</p>';
-  renderBoard('#season-board');
+  renderBoard('#season-board'); steps();
 }
 async function simSeason(){const Z=S.season; Z.busy=true; renderSeason();
   while(Z.round<Z.order.length){playRound(); Z.busy=Z.round<Z.order.length; renderSeason(); $('#clips .clip')?.classList.add('fresh'); await wait(520);}
@@ -1995,12 +2180,13 @@ function nextLive(){
   const g=LV.queue.shift(); if(!g){$('#live').hidden=true; document.body.classList.remove('noscroll'); LV.done&&LV.done(); return;}
   const Z=S.season; Object.assign(LV,{g,ev:buildEvents(g),i:0,t:0,sc:{h:0,a:0},q:{h:[],a:[]},end:2880+g.ot*300});
   const side=id=>Z.sides[id], H=side(g.home), A=side(g.away);
-  const col=s=>s.id==='YOU'?'var(--led)':TEAMS[s.team].c1;
+  const col=s=>s.id==='YOU'?'var(--gold)':TEAMS[s.team].c1;
   const tag=g.phase==='league'?`Regular season · ${g.home==='YOU'?'Home':'Away'}`:`${g.phase} · Game ${g.gn}`;
   $('#lv-tag').textContent=tag;
   $('#lv-teams').innerHTML=`<div class="lv-tm" style="--c:${col(A)}"><small>Away</small><b>${esc(A.short)}</b><span id="lv-sa">0</span></div>
     <div class="lv-clock"><b id="lv-q">Q1</b><span id="lv-t">12:00</span></div>
     <div class="lv-tm" style="--c:${col(H)}"><small>Home</small><b>${esc(H.short)}</b><span id="lv-sh">0</span></div>`;
+  $('#lv-wp').style.cssText=`--ca:${col(A)};--ch:${col(H)}`;
   $('#lv-wp').innerHTML=`<span>${esc(A.short)} <b id="lv-wpa"></b></span><i><b id="lv-bar"></b></i><span><b id="lv-wph"></b> ${esc(H.short)}</span>`;
   $('#lv-feed').innerHTML=''; $('#lv-box').hidden=true; $('#lv-box').innerHTML='';
   $('#lv-actions').innerHTML=`<button class="ghost sm" data-sp="1">1×</button><button class="ghost sm" data-sp="3">3×</button><button class="ghost sm" id="lv-skip">Skip to final ⏭</button>`;
@@ -2011,6 +2197,7 @@ function nextLive(){
   const loop=now=>{const dt=Math.min(100,now-last); last=now; LV.t=Math.min(LV.end,LV.t+dt*(2880/(REDUCED?400:12000))*LV.speed); liveFrame(); if(LV.t<LV.end)LV.raf=requestAnimationFrame(loop); else finishLive();};
   LV.raf=requestAnimationFrame(loop);
 }
+function bump(sel,v){const el=$(sel); if(el.textContent===String(v))return; el.textContent=v; if(REDUCED||v===0)return; el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');}
 function liveWP(){const g=LV.g, m=LV.sc.h-LV.sc.a, t=LV.t;
   if(t>=LV.end)return m>0?1:0;
   let r,sd; if(t<2880){r=1-t/2880; sd=SD*Math.sqrt(r)+.6;} else {r=0; sd=4.2*Math.sqrt((LV.end-t)/300)+.6;}
@@ -2018,7 +2205,7 @@ function liveWP(){const g=LV.g, m=LV.sc.h-LV.sc.a, t=LV.t;
 function liveFrame(){
   const g=LV.g; const out=[];
   while(LV.i<LV.ev.length&&LV.ev[LV.i].t<=LV.t){const e=LV.ev[LV.i++]; if(e.pts){LV.sc[e.sd]+=e.pts; const qi=e.t<2880?Math.floor(e.t/720):4+Math.floor((e.t-2880)/300); LV.q[e.sd][qi]=(LV.q[e.sd][qi]||0)+e.pts;} out.push(e);}
-  $('#lv-sh').textContent=LV.sc.h; $('#lv-sa').textContent=LV.sc.a;
+  bump('#lv-sh',LV.sc.h); bump('#lv-sa',LV.sc.a);
   const t=LV.t, per=t<2880?Math.min(3,Math.floor(t/720)):4+Math.min(g.ot-1,Math.floor((t-2880)/300));
   const left=t>=LV.end?0:per<4?720-(t-per*720):300-(t-2880-(per-4)*300);
   $('#lv-q').textContent=t>=LV.end?'Final':per<4?'Q'+(per+1):(per>4?(per-3)+'OT':'OT');
@@ -2098,10 +2285,29 @@ function boot(){
   $('#how').addEventListener('click',e=>{if(e.target.id==='how')$('#how').hidden=true});
   $('#how-start').onclick=()=>{$('#how').hidden=true;startDraft()};
   $$('#filters button').forEach(b=>b.onclick=()=>{S.filter=b.dataset.f;renderDraft()});
+  $('#qp').checked=QUICK(); $('#qp').onchange=e=>{try{localStorage.setItem(QKEY,e.target.checked?'1':'')}catch{}};
+  $('#draft-count').onclick=()=>{if(matchMedia('(max-width:700px)').matches)$('#board').scrollIntoView({behavior:REDUCED?'auto':'smooth'})};
   $('#begin').onclick=startSeason;
   $('#redraft').onclick=startDraft;
   $('#again').onclick=startDraft;
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('#how').hidden=true;$('#mystery').hidden=true}});
+}
+// quick packs: skip the tear-open ceremony (per viewer)
+const QKEY='dynasty-draft:quick-packs';
+function QUICK(){try{return !!localStorage.getItem(QKEY)}catch{return false}}
+
+// pointer depth: cards tilt toward the cursor with a moving glare; panels catch a soft spotlight
+function untilt(c){c.classList.remove('tilt'); c.style.removeProperty('--rx'); c.style.removeProperty('--ry');}
+if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!REDUCED){
+  let raf=0, ev=null, cur=null;
+  document.addEventListener('pointermove',e=>{ev=e; if(raf)return; raf=requestAnimationFrame(()=>{raf=0; const t=ev.target; if(!t.closest)return;
+    const c=t.closest('.card'); if(cur&&cur!==c)untilt(cur); cur=c;
+    if(c&&!c.classList.contains('flipped')&&!c.classList.contains('signed')&&!c.querySelector('.place:not([hidden])')){const r=c.getBoundingClientRect(), x=(ev.clientX-r.left)/r.width, y=(ev.clientY-r.top)/r.height;
+      c.classList.add('tilt'); c.style.setProperty('--rx',((.5-y)*16).toFixed(2)+'deg'); c.style.setProperty('--ry',((x-.5)*18).toFixed(2)+'deg');
+      c.style.setProperty('--mx',(x*100).toFixed(1)+'%'); c.style.setProperty('--my',(y*100).toFixed(1)+'%');}
+    const sp=t.closest('.leg,.ser,#sched li,.odds-grid>div,.scoreboard>div:not(#s-actions),.hstats>div,.pack');
+    if(sp){const r=sp.getBoundingClientRect(); sp.style.setProperty('--sx',(ev.clientX-r.left)+'px'); sp.style.setProperty('--sy',(ev.clientY-r.top)+'px');}});},{passive:true});
+  document.documentElement.addEventListener('pointerleave',()=>{cur&&untilt(cur); cur=null;});
 }
 boot();
 </script>
