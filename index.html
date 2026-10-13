@@ -715,6 +715,33 @@ body:not([data-view=home]) .ticker{display:none}
   #s-actions .ghost{padding:12px;font-size:13px}
   #sched{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+/* sound toggle */
+.snd{display:grid;place-items:center;width:36px;height:34px;padding:0!important}
+.snd .on{display:none}.snd.on .on{display:inline}.snd.on .off{display:none}.snd.on{color:#fff!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* coach marks (first run) */
+.coach{position:fixed;inset:0;z-index:90}
+.coach-hole{position:fixed;border-radius:14px;box-shadow:0 0 0 9999px rgba(3,6,15,.72),0 0 0 2px var(--gold);transition:all .35s var(--ease);pointer-events:none}
+.coach-tip{position:fixed;background:#0f1d40;border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:12px;padding:14px 16px;box-shadow:0 24px 50px -20px #000;animation:popin .3s var(--ease);transition:top .35s var(--ease),left .35s var(--ease)}
+.coach-tip p{margin:0 0 12px;font-size:15px;line-height:1.45;color:var(--chalk)}
+.coach-ft{display:flex;align-items:center;gap:8px}
+.coach-ft span{margin-right:auto;font:600 11px var(--f-mono);letter-spacing:.14em;color:var(--muted)}
+.coach-ft .cta{padding:9px 16px;font-size:15px}
+#pager{display:none}
+@media (prefers-reduced-motion:reduce){.coach-hole,.coach-tip{transition:none;animation:none}}
+
+/* phones: pack is a swipe row */
+@media (max-width:700px){
+  #pack-cards{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;padding:6px calc((100% - min(250px,68vw)) / 2) 12px;scrollbar-width:none;overscroll-behavior-x:contain;container-type:normal}
+  #pack-cards::-webkit-scrollbar{display:none}
+  #pack-cards .card{--w:min(250px,68vw);scroll-snap-align:center;scroll-snap-stop:always}
+  #pack-cards .empty{flex:1}
+  #pager{display:flex;justify-content:center;gap:6px;padding:2px 0 4px}
+  #pager i{width:6px;height:6px;border-radius:3px;background:var(--line);transition:width .25s var(--ease),background-color .25s}
+  #pager i.on{width:18px;background:var(--chalk)}
+  .snd{width:32px}
+}
 </style>
 </head>
 <body>
@@ -722,7 +749,7 @@ body:not([data-view=home]) .ticker{display:none}
 <header class="top"><div class="wrap">
   <button class="brand" data-go="home"><i class="mark" aria-hidden="true"></i><b>DYNASTY DRAFT</b><small>All-time NBA</small></button>
   <ol class="steps" id="steps" aria-label="Your run"><li>Draft</li><li>Rotation</li><li>Season</li><li>Playoffs</li><li>Banner</li></ol>
-  <nav><button data-go="banners">Banners</button><button data-go="how">How<span class="lg"> it works</span></button></nav>
+  <nav><button id="snd" class="snd" aria-pressed="false" title="Sound off"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="on" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="off" d="M16 9l6 6M22 9l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="sr">Sound</span></button><button data-go="banners">Banners</button><button data-go="how">How<span class="lg"> it works</span></button></nav>
 </div><div class="ticker" aria-hidden="true"><div class="tk-in" id="ticker"></div></div></header>
 
 <main>
@@ -753,6 +780,7 @@ body:not([data-view=home]) .ticker{display:none}
         <div id="pack-head"></div>
         <div id="filters"><button data-f="ALL">All</button><button data-f="GUARDS">Guards</button><button data-f="WINGS">Wings</button><button data-f="BIGS">Bigs</button><label class="qp" title="Skip the pack-opening animation"><input type="checkbox" id="qp"> Quick packs</label></div>
         <div id="pack-cards"></div>
+        <div id="pager" aria-hidden="true"></div>
       </section>
       <aside class="board" id="board" aria-label="Your eight"></aside>
     </div>
@@ -800,7 +828,7 @@ body:not([data-view=home]) .ticker{display:none}
 <div class="view" id="v-result" hidden>
   <div class="wrap">
     <div class="banner" id="r-banner"></div>
-    <div class="r-actions"><button class="cta" id="again">Draft a new eight</button><button class="ghost" data-go="banners">See your banners</button></div>
+    <div class="r-actions"><button class="cta" id="again">Draft a new eight</button><button class="ghost" id="share">Share card</button><button class="ghost" data-go="banners">See your banners</button></div>
     <h3 class="sub">Playoffs</h3>
     <div id="r-bracket"></div>
     <div class="r-grid">
@@ -1882,19 +1910,20 @@ function renderDraft(mode=''){
     c.addEventListener('click',e=>{if(e.target.closest('.flip')||e.target.closest('.place'))return; openPlace();});
     c.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target===c)openPlace();});
   });
-  renderBoard('#board',{undo:true,trade:true});
+  renderBoard('#board',{undo:true,trade:true}); pager();
   if(mode==='rip'){const luck=S.luck, quick=QUICK();
     const after=id=>{if(id)S.filter='ALL'; renderDraft('deal');
       if(quick){const top=S.cards.reduce((a,b)=>b.ovr>a.ovr?b:a); if(top.ovr>=94)toast(`<b>${TIERNAME[tierOf(top.ovr)]} pull!</b> ${esc(top.name)}, ${top.ovr} OVR.`,'gold');}
       if(luck?.k==='moment') toast(`<b>Lucky pull!</b> A <em>Moments</em> ${esc(luck.p.name)} is in this pack (+3 OVR).`,'gold');
       if(luck?.k==='reroll') toast('<b>Lucky bounce.</b> You found a bonus reroll.','gold');
-      const c=id&&$(`#pack-cards .card[data-id="${CSS.escape(id)}"]`); if(c){c.scrollIntoView({block:'center',behavior:REDUCED?'auto':'smooth'}); c.click();}};
+      const c=id&&$(`#pack-cards .card[data-id="${CSS.escape(id)}"]`); if(c){c.scrollIntoView({block:'center',inline:'center',behavior:REDUCED?'auto':'smooth'}); c.click();}
+      else if(S.history.length<=1) setTimeout(()=>tour('draft'),900);};
     if(quick) after(); else openPack(S.cards,{team:pk.team,decade:pk.decade,label:t.name,canDraft:p=>eligible([p]).length>0}).then(after);}
 }
 async function place(p,slot,el){
   if(S.busy)return; S.busy=true;
   S.history.push({slot,pack:S.pack,cards:S.cards,rerolls:S.rerolls,lastPack:S.lastPack,streak:S.streak,dry:S.dry});
-  el?.classList.add('signed'); el&&(el.querySelector('.place').hidden=true);
+  el?.classList.add('signed'); sfx('sign'); el&&(el.querySelector('.place').hidden=true);
   S.roster[slot]=p; S.drafted.add(p.name);
   S.streak=p.ovr>=93?S.streak+1:0; S.dry=p.ovr>=90?0:S.dry+1;
   renderBoard('#board',{undo:false}); $('#board').querySelector(`[data-slot="${slot}"]`)?.classList.add('pop');
@@ -1942,7 +1971,7 @@ function openPack(cards,{team=null,decade='',label='',pick=null,onPick=null,canD
         b.onclick=()=>{onPick(order[i]); close();}; el.appendChild(b);});};
     const flip=i=>{const el=pcs[i]; if(el.classList.contains('up'))return; el.classList.add('up'); shown++; const p=order[i];
       el.setAttribute('aria-label',`${p.name}, ${p.ovr} overall${canDraft?(canDraft(p)?'. Press Enter to draft':'. No open spot'):''}`);
-      if(p.ovr>=94){el.classList.add('walkout'); toast(`<b>${TIERNAME[tierOf(p.ovr)]} pull!</b> ${esc(p.name)}, ${p.ovr} OVR.`,'gold');}
+      sfx(p.ovr>=94?'pull':'flip'); if(p.ovr>=94){el.classList.add('walkout'); toast(`<b>${TIERNAME[tierOf(p.ovr)]} pull!</b> ${esc(p.name)}, ${p.ovr} OVR.`,'gold');}
       acts();};
     // cards turn themselves over, worst to best; the last one holds a beat before it turns
     async function revealAll(){if(running)return; running=true;
@@ -1957,7 +1986,7 @@ function openPack(cards,{team=null,decade='',label='',pick=null,onPick=null,canD
       setTimeout(()=>{R.hidden=true;R.classList.remove('out');R.innerHTML='';document.body.classList.remove('noscroll');done(id);},REDUCED?0:320);}
     $('#rip-skip')&&($('#rip-skip').onclick=()=>close());
     const W=$('#wrapper'); W.focus();
-    W.onclick=async()=>{if(W.classList.contains('torn'))return; W.classList.add('torn'); $('#rip .rip-hint').hidden=true; await wait(700);
+    W.onclick=async()=>{if(W.classList.contains('torn'))return; W.classList.add('torn'); sfx('rip'); $('#rip .rip-hint').hidden=true; await wait(700);
       W.remove(); $('#rip .rip-cards').hidden=false; acts(); pcs[0]?.focus({preventScroll:true}); await wait(500+pcs.length*110); revealAll();};
   });
 }
@@ -2033,7 +2062,7 @@ function startSeason(){
   const pairs=[]; for(let i=0;i<LEGENDS.length;i++)for(let j=i+1;j<LEGENDS.length;j++)pairs.push([LEGENDS[i].id,LEGENDS[j].id]);
   const table={}; Object.keys(sides).forEach(k=>table[k]={w:0,l:0,pf:0,pa:0});
   S.season={sides,order,pairs,round:0,table,ugames:[],stats:{},phase:'league',po:null,xw:0,busy:false};
-  show('season'); renderSeason();
+  show('season'); renderSeason(); setTimeout(()=>tour('season'),500);
 }
 function record(g){const T=S.season.table; const h=T[g.home],a=T[g.away]; h.pf+=g.hs;h.pa+=g.as;a.pf+=g.as;a.pa+=g.hs; if(g.win===g.home){h.w++;a.l++}else{a.w++;h.l++}}
 function addStats(g,phase){const st=S.season.stats; const bx=g.home==='YOU'?g.bh:g.away==='YOU'?g.ba:null; if(!bx)return;
@@ -2222,7 +2251,7 @@ function liveFrame(){
 function finishLive(){cancelAnimationFrame(LV.raf); const g=LV.g; LV.t=LV.end; liveFrame();
   const Z=S.season, you=g.win==='YOU', H=Z.sides[g.home], A=Z.sides[g.away];
   const close=Math.abs(g.hs-g.as)<=3;
-  const li=document.createElement('li'); li.className='final '+(you?'w':'l');
+  sfx(you?'win':'loss'); const li=document.createElement('li'); li.className='final '+(you?'w':'l');
   li.innerHTML=`<span>Final</span>${you?'Your Eight win':'Your Eight lose'}${close&&rnd()<.6?(you?' on a friendly roll off the rim':' on a cruel bounce'):''}. Pre-game odds: ${pc0(g.wp)}.${you&&g.wp<.4?' <em>Upset!</em>':''}`;
   $('#lv-feed').prepend(li);
   $('#lv-box').innerHTML=`<details open><summary>Box score</summary>${boxTable(A.short,g.ba)}${boxTable(H.short,g.bh)}</details>`; $('#lv-box').hidden=false;
@@ -2241,6 +2270,10 @@ function renderResult(){
   else if(po.fin.a==='YOU'||po.fin.b==='YOU'){status='Finals runner-up';cls='ru';line=`Reached the Finals and fell to the ${teamLabel(po.fin.winner)} ${Math.max(po.fin.wa,po.fin.wb)}–${Math.min(po.fin.wa,po.fin.wb)}.`;}
   else {const s=po.semis.find(s=>s.a==='YOU'||s.b==='YOU'); status='Out in the semis';cls='semi';line=`Lost the semifinal to the ${teamLabel(s.winner)} ${Math.max(s.wa,s.wb)}–${Math.min(s.wa,s.wb)}.`;}
   const all=Z.ugames.length, wins=Z.ugames.filter(g=>g.win==='YOU').length, luck=wins-Z.xw;
+  const sr=s=>`${Math.max(s.wa,s.wb)}–${Math.min(s.wa,s.wb)}`, mine=po.seeds.includes('YOU')?(po.fin.a==='YOU'||po.fin.b==='YOU'?po.fin:po.semis.find(s=>s.a==='YOU'||s.b==='YOU')):null;
+  const fmvpName=cls==='champ'?Object.values(Z.stats).filter(s=>s.po).sort((a,b)=>b.popts-a.popts)[0]?.name:null;
+  S.last={status,cls,rec:`${U.w}–${U.l}`,pos:ord(pos),luck,fmvp:fmvpName,ovr:teamModel(rosterList(S.roster)).ovr,
+    po:cls==='champ'?`Won the Finals ${sr(mine)}`:cls==='ru'?`Lost the Finals ${sr(mine)}`:cls==='semi'?`Lost the semifinal ${sr(mine)}`:'Missed the playoffs'};
   line+=` Luck: ${luck>=0?'+':'−'}${Math.abs(luck).toFixed(1)} wins against the odds.`;
   const stats=Object.values(Z.stats).sort((a,b)=>b.pts/b.gp-a.pts/a.gp);
   const fmvp=(cls==='champ')?Object.values(Z.stats).filter(s=>s.po).sort((a,b)=>b.popts-a.popts)[0]:null;
@@ -2255,7 +2288,7 @@ function renderResult(){
     return `<li class="${g.win==='YOU'?'w':'l'}"><span>${esc(g.phase==='league'?(home?'Home':'Away'):g.phase)}</span><b>${esc(shortLabel(g.opp))}</b><em>${us}–${them}${g.ot?' OT':''} <small>${pc0(g.wp)}</small></em><i>${g.win==='YOU'?'W':'L'}</i></li>`}).join('');
   renderBoard('#result-board');
   saveBanner({date:new Date().toISOString().slice(0,10),status,cls,rec:`${U.w}–${U.l}`,ovr:teamModel(rosterList(S.roster)).ovr,star:[...rosterList(S.roster)].sort((a,b)=>b.p.ovr-a.p.ovr)[0].p.name,fmvp:fmvp?fmvp.name:null,roster:SLOTS.map(s=>S.roster[s.id].name)});
-  if(cls==='champ')confetti();
+  if(cls==='champ'){confetti(); sfx('champ');}
 }
 function confetti(){if(REDUCED)return; const c=document.createElement('div'); c.className='confetti';
   c.innerHTML=Array.from({length:60},(_,i)=>`<i style="--x:${rnd()*100}vw;--d:${(rnd()*1.2).toFixed(2)}s;--r:${Math.floor(rnd()*360)}deg;--c:${['#ff6a3d','#f2c94c','#47c98a','#79b8ff','#c58bff'][i%5]}"></i>`).join('');
@@ -2287,11 +2320,103 @@ function boot(){
   $$('#filters button').forEach(b=>b.onclick=()=>{S.filter=b.dataset.f;renderDraft()});
   $('#qp').checked=QUICK(); $('#qp').onchange=e=>{try{localStorage.setItem(QKEY,e.target.checked?'1':'')}catch{}};
   $('#draft-count').onclick=()=>{if(matchMedia('(max-width:700px)').matches)$('#board').scrollIntoView({behavior:REDUCED?'auto':'smooth'})};
+  sndInit(); $('#snd').onclick=()=>sndSet(!SND.on);
+  $('#share').onclick=shareCard;
+  $('#pack-cards').addEventListener('scroll',()=>{clearTimeout(pagerT); pagerT=setTimeout(pagerSync,40)},{passive:true});
   $('#begin').onclick=startSeason;
   $('#redraft').onclick=startDraft;
   $('#again').onclick=startDraft;
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('#how').hidden=true;$('#mystery').hidden=true}});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('#how').hidden=true;$('#mystery').hidden=true;$('#coach')?.querySelector('[data-c=skip]')?.click()}});
 }
+// ---------- sound: tiny synthesized cues, off until the viewer turns them on ----------
+const SKEY='dynasty-draft:sound', SND={on:false,ctx:null};
+function sndInit(){let on=false; try{on=localStorage.getItem(SKEY)==='1'}catch{} sndSet(on,true);}
+function sndSet(on,quiet){SND.on=on; try{localStorage.setItem(SKEY,on?'1':'')}catch{}
+  const b=$('#snd'); b.setAttribute('aria-pressed',on); b.title=on?'Sound on':'Sound off'; b.classList.toggle('on',on); if(on&&!quiet)sfx('flip');}
+function sfx(k){if(!SND.on)return; try{
+  const c=SND.ctx||(SND.ctx=new (window.AudioContext||window.webkitAudioContext)()); if(c.state==='suspended')c.resume();
+  const T=c.currentTime, out=c.createGain(); out.gain.value=.5; out.connect(c.destination);
+  const tone=(f,d,{at=0,type='sine',g=.25,to=null}={})=>{const o=c.createOscillator(), v=c.createGain(); o.type=type; o.frequency.setValueAtTime(f,T+at); if(to)o.frequency.exponentialRampToValueAtTime(to,T+at+d);
+    v.gain.setValueAtTime(0,T+at); v.gain.linearRampToValueAtTime(g,T+at+.01); v.gain.exponentialRampToValueAtTime(.0001,T+at+d); o.connect(v).connect(out); o.start(T+at); o.stop(T+at+d+.02);};
+  const noise=(d,{at=0,g=.3,f=2000,q=.8,type='bandpass'}={})=>{const n=c.createBufferSource(), buf=c.createBuffer(1,Math.ceil(c.sampleRate*d),c.sampleRate), ch=buf.getChannelData(0);
+    for(let i=0;i<ch.length;i++)ch[i]=(Math.random()*2-1)*(1-i/ch.length); n.buffer=buf; const fl=c.createBiquadFilter(); fl.type=type; fl.frequency.value=f; fl.Q.value=q;
+    const v=c.createGain(); v.gain.value=g; n.connect(fl).connect(v).connect(out); n.start(T+at);};
+  ({rip:()=>{noise(.28,{f:2600,g:.5}); noise(.18,{at:.12,f:4200,g:.35});},
+    flip:()=>noise(.05,{f:3500,g:.35,type:'highpass'}),
+    pull:()=>{noise(.05,{f:3500,g:.3,type:'highpass'}); [523,659,784,1047].forEach((f,i)=>tone(f,.35,{at:.05+i*.07,type:'triangle',g:.18}));},
+    sign:()=>{tone(150,.2,{to:55,g:.45}); noise(.04,{f:1200,g:.25});},
+    win:()=>{tone(392,.6,{type:'sawtooth',g:.06}); [523,659,784].forEach((f,i)=>tone(f,.4,{at:.5+i*.09,type:'triangle',g:.16}));},
+    loss:()=>{tone(392,.6,{type:'sawtooth',g:.06}); tone(330,.35,{at:.5,type:'triangle',g:.14}); tone(262,.5,{at:.75,type:'triangle',g:.14});},
+    champ:()=>[523,659,784,1047,784,1047,1319].forEach((f,i)=>tone(f,.5,{at:i*.12,type:'triangle',g:.18}))}[k]||(()=>{}))();
+}catch{}}
+
+// ---------- guided first run: a few coach marks, once per viewer ----------
+const TOURS={
+  draft:[['#pack-head','Every pack is one franchise’s core for one decade. Each card carries only those seasons, so 90s Jordan isn’t 80s Jordan.'],
+    ['#pack-cards .card','Tap a player, then pick the spot he’ll play. Cards only fit positions he actually played.'],
+    ['@board','Your eight fills in here. Chemistry rewards what title teams share: a closer, a floor general, shooters, a rim protector.'],
+    ['#reroll','Bad draw? You get one reroll per draft, and some packs hand you a bonus one.']],
+  season:[['#sched','A home-and-away gauntlet against eight all-time teams. The top four make the playoffs.'],
+    ['#s-actions','Watch each game live with win odds, or sim ahead when you’d rather see the table.']]};
+function tour(name){const key='dynasty-draft:tour:'+name; try{if(localStorage.getItem(key))return; localStorage.setItem(key,'1')}catch{return}
+  const phone=matchMedia('(max-width:700px)').matches;
+  const steps=TOURS[name].map(([sel,t])=>[sel==='@board'?(phone?'#draft-count':'#board'):sel,t]).filter(([sel])=>$(sel)); if(!steps.length)return;
+  const C=document.createElement('div'); C.id='coach'; C.className='coach'; C.setAttribute('role','dialog'); C.setAttribute('aria-label','Quick tour');
+  C.innerHTML='<div class="coach-hole"></div><div class="coach-tip" aria-live="polite"><p></p><div class="coach-ft"><span></span><button class="ghost sm" data-c="skip">Skip</button><button class="cta" data-c="next"></button></div></div>';
+  document.body.appendChild(C); let i=0;
+  const place=()=>{const el=$(steps[i][0]); if(!el)return end(); const r=el.getBoundingClientRect(), pad=8, H=C.querySelector('.coach-hole'), tip=C.querySelector('.coach-tip');
+    const top=Math.max(r.top-pad,4), h=Math.min(r.height+pad*2,innerHeight-top-4);
+    Object.assign(H.style,{left:r.left-pad+'px',top:top+'px',width:r.width+pad*2+'px',height:h+'px'});
+    const below=top+h+12, tw=Math.min(360,innerWidth-24), th=tip.offsetHeight;
+    tip.style.width=tw+'px'; tip.style.left=Math.max(12,Math.min(innerWidth-tw-12,r.left+r.width/2-tw/2))+'px';
+    tip.style.top=(below+th<innerHeight-8?below:Math.max(8,top-th-12))+'px';};
+  const go=()=>{const el=$(steps[i][0]); C.querySelector('p').textContent=steps[i][1]; C.querySelector('.coach-ft span').textContent=`${i+1} / ${steps.length}`;
+    C.querySelector('[data-c=next]').textContent=i<steps.length-1?'Next':'Got it';
+    if(getComputedStyle(el).position!=='fixed')el.scrollIntoView({block:'center',behavior:'auto'}); requestAnimationFrame(place); C.querySelector('[data-c=next]').focus({preventScroll:true});};
+  const end=()=>{removeEventListener('resize',place); removeEventListener('scroll',place,true); C.remove();};
+  C.querySelector('[data-c=next]').onclick=()=>{if(++i<steps.length)go(); else end();};
+  C.querySelector('[data-c=skip]').onclick=end;
+  addEventListener('resize',place); addEventListener('scroll',place,true); go();}
+
+// ---------- phones: the pack is a swipe row with a pager ----------
+let pagerT=0;
+function pager(){const n=$$('#pack-cards .card').length; $('#pager').innerHTML=n>1?Array.from({length:n},()=>'<i></i>').join(''):''; $('#pack-cards').scrollLeft=0; pagerSync();}
+function pagerSync(){const P=$('#pack-cards'), cs=$$('#pack-cards .card'); if(!cs.length)return; const mid=P.scrollLeft+P.clientWidth/2;
+  let k=0,best=1e9; cs.forEach((c,j)=>{const d=Math.abs(c.offsetLeft+c.offsetWidth/2-mid); if(d<best){best=d;k=j}}); $$('#pager i').forEach((d,j)=>d.classList.toggle('on',j===k));}
+
+// ---------- share card: a 1080×1350 image of the run ----------
+const TIERCOL={bz:'#b07a4f',sv:'#c9d1dc',gd:'#e7bd4f',em:'#3fd38a',sa:'#5aa8ff',ru:'#ff5d78',am:'#b98bff',di:'#a8ecff',pd:'#ffb3e1',go:['#ff7ab6','#ffd36e','#7affc4','#79b8ff'],dm:['#3a1a6e','#8a5cff','#1b4a5c']};
+async function shareCard(){const R=S.last; if(!R)return; const b=$('#share'); b.disabled=true;
+  try{await document.fonts?.ready;}catch{}
+  const W=1080,H=1350, cv=document.createElement('canvas'); cv.width=W; cv.height=H; const x=cv.getContext('2d');
+  const D="'Big Shoulders Display',Impact,sans-serif", M="'DM Mono',ui-monospace,monospace", B="Archivo,Arial,sans-serif";
+  let g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,'#0d1b3a'); g.addColorStop(1,'#050b1c'); x.fillStyle=g; x.fillRect(0,0,W,H);
+  g=x.createRadialGradient(W/2,0,0,W/2,0,700); g.addColorStop(0,R.cls==='champ'?'rgba(242,201,76,.35)':'rgba(29,66,138,.55)'); g.addColorStop(1,'rgba(0,0,0,0)'); x.fillStyle=g; x.fillRect(0,0,W,700);
+  x.fillStyle='#1d428a'; x.fillRect(0,0,W*.46,14); x.fillStyle='#fff'; x.fillRect(W*.46,0,W*.08,14); x.fillStyle='#c8102e'; x.fillRect(W*.54,0,W*.46,14);
+  const fit=(t,font,size,max)=>{let s=size; do{x.font=font.replace('$',s)}while(x.measureText(t).width>max&&(s-=4)>20); return s;};
+  x.textAlign='center'; x.fillStyle='#93a4c7'; x.font=`500 28px ${M}`; x.fillText('DYNASTY DRAFT · ALL-TIME NBA',W/2,92);
+  x.fillStyle={champ:'#f2c94c',ru:'#c9d1dc'}[R.cls]||'#c98f55'; fit(R.status.toUpperCase(),`900 $px ${D}`,170,W-120); x.fillText(R.status.toUpperCase(),W/2,250);
+  x.fillStyle='#f3f6fc'; x.font=`600 40px ${B}`; x.fillText(`${R.rec} · ${R.pos} of 9 · ${R.po}`,W/2,320);
+  x.fillStyle='#93a4c7'; x.font=`500 26px ${M}`; x.fillText(`TEAM ${R.ovr}  ·  LUCK ${R.luck>=0?'+':'−'}${Math.abs(R.luck).toFixed(1)}${R.fmvp?'  ·  FINALS MVP '+R.fmvp.toUpperCase():''}`,W/2,372);
+  const rows=SLOTS.map(s=>({s,p:S.roster[s.id]})), top=430, rh=104;
+  rows.forEach(({s,p},i)=>{const y=top+i*rh+(i>=5?24:0);
+    x.fillStyle='rgba(13,27,58,.85)'; x.beginPath(); x.roundRect(80,y,W-160,rh-14,18); x.fill();
+    x.fillStyle=TEAMS[p.team].c1; x.fillRect(80,y+16,6,rh-46);
+    x.textAlign='left'; x.fillStyle='#93a4c7'; x.font=`600 24px ${M}`; x.fillText(s.label,112,y+56);
+    x.fillStyle='#fff'; fit(p.name.toUpperCase(),`800 $px ${D}`,46,620); x.fillText(p.name.toUpperCase(),200,y+50);
+    x.fillStyle='#93a4c7'; x.font=`500 22px ${M}`; x.fillText(era(p).toUpperCase()+(p.moment?' · MOMENTS':''),200,y+78);
+    const t=tierOf(p.ovr), c=TIERCOL[t], cx=W-208, cy=y+16;
+    if(Array.isArray(c)){const lg=x.createLinearGradient(cx,cy,cx+108,cy+58); c.forEach((k,j)=>lg.addColorStop(j/(c.length-1),k)); x.fillStyle=lg;} else x.fillStyle=c;
+    x.beginPath(); x.roundRect(cx,cy,108,58,12); x.fill();
+    x.textAlign='center'; x.fillStyle=t==='dm'?'#efe2ff':'#1b1407'; x.font=`900 44px ${D}`; x.fillText(p.ovr,cx+54,cy+46);});
+  x.fillStyle='#93a4c7'; x.font=`600 20px ${M}`; x.textAlign='left'; x.fillText('STARTING FIVE',84,top-14); x.fillText('BENCH',84,top+5*rh+12);
+  x.textAlign='center'; x.fillStyle='#5d6f96'; x.font=`500 22px ${M}`; x.fillText(new Date().toISOString().slice(0,10)+'  ·  DRAFT YOUR OWN EIGHT',W/2,H-36);
+  const blob=await new Promise(r=>cv.toBlob(r,'image/png')); b.disabled=false; if(!blob)return;
+  const file=new File([blob],`dynasty-draft-${R.cls}.png`,{type:'image/png'});
+  try{if(navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:'Dynasty Draft',text:`${R.status}: ${R.rec}. ${R.po}.`}); return;}}catch(e){if(e?.name==='AbortError')return;}
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=file.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  toast('<b>Card saved.</b> Your run is in your downloads.');}
+
 // quick packs: skip the tear-open ceremony (per viewer)
 const QKEY='dynasty-draft:quick-packs';
 function QUICK(){try{return !!localStorage.getItem(QKEY)}catch{return false}}
