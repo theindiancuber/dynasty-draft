@@ -1,0 +1,1289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Draft an eight-man NBA rotation from franchise-decade packs and take it through a gauntlet of all-time great teams.">
+<meta property="og:title" content="Dynasty Draft">
+<meta property="og:description" content="Draft an eight. Hang a banner.">
+<style>body{margin:0}img{max-width:100%}</style>
+<title>Dynasty Draft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: arena at night. Hardwood band under the hero, scoreboard-black panels, metallic trading cards as the one loud element. */
+:root{
+  --floor:#0a0e15; --panel:#111824; --panel2:#172133; --line:#26334b; --chalk:#efe9dc; --muted:#8f9bb2;
+  --maple:#c98f55; --maple2:#a8703c; --led:#ff6a3d; --win:#47c98a; --loss:#ef5b5b; --gold:#f2c94c;
+  --f-display:'Big Shoulders Display','Impact','Arial Narrow',sans-serif;
+  --f-body:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --f-mono:'DM Mono',ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--floor);color:var(--chalk);font-family:var(--f-body);font-size:15px;line-height:1.5}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,.card:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+h1,h2,h3,h4{text-wrap:balance;margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:20px}
+.mono-num,td,.line b,.ovr b{font-variant-numeric:tabular-nums}
+.mini{display:inline-grid;place-items:center;min-width:34px;height:22px;padding:0 6px;border-radius:4px;background:var(--c1,#333);color:#fff;font:600 11px/1 var(--f-mono);letter-spacing:.06em}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(10,14,21,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:16px;min-height:56px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px;background:none;border:0;padding:0}
+.brand b{font:900 24px/1 var(--f-display);letter-spacing:.04em;color:var(--maple)}
+.brand small{font:500 11px var(--f-mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.top nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
+.top nav button{background:none;border:0;padding:8px 10px;font:600 12px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.top nav button:hover{color:var(--chalk)}
+
+/* buttons */
+.cta{background:var(--led);color:#1a0b05;border:0;border-radius:6px;padding:13px 22px;font:800 18px/1 var(--f-display);letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 0 1px #ff8e6a inset,0 8px 24px -10px var(--led)}
+.cta:hover{filter:brightness(1.08)}
+.ghost{background:transparent;border:1px solid var(--line);border-radius:6px;padding:12px 18px;font:700 16px/1 var(--f-display);letter-spacing:.08em;text-transform:uppercase}
+.ghost:hover{border-color:var(--muted)}
+
+/* hero */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero::before{content:"";position:absolute;inset:auto 0 0 0;height:46%;background:
+  repeating-linear-gradient(90deg,rgba(0,0,0,.18) 0 1px,transparent 1px 84px),
+  repeating-linear-gradient(90deg,var(--maple) 0 21px,#c48a50 21px 42px,var(--maple2) 42px 63px,#cf9760 63px 84px);
+  opacity:.9;mask:linear-gradient(to bottom,transparent,#000 40%)}
+.hero::after{content:"";position:absolute;left:50%;bottom:-140px;width:420px;height:280px;transform:translateX(-50%);border:3px solid rgba(255,255,255,.35);border-radius:50%}
+.hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:center;padding-block:56px 64px}
+.kicker{font:500 12px var(--f-mono);letter-spacing:.2em;text-transform:uppercase;color:var(--led)}
+.hero h1{font:900 clamp(56px,9vw,112px)/.86 var(--f-display);letter-spacing:.01em;text-transform:uppercase;margin:10px 0 16px}
+.hero h1 span{color:var(--maple)}
+.hero p.lede{max-width:46ch;color:#cfd6e3;font-size:17px;margin:0 0 22px}
+.hstats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+.hstats div{background:rgba(17,24,36,.85);border:1px solid var(--line);border-radius:6px;padding:10px 14px;min-width:110px}
+.hstats b{display:block;font:800 30px/1 var(--f-display);color:var(--chalk)}
+.hstats small{font:500 10px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+#hero-cards{display:flex;align-items:flex-end;padding-right:10px}
+#hero-cards .card{margin-left:-46px;transform:rotate(-8deg) translateY(12px)}
+#hero-cards .card:nth-child(2){transform:rotate(0) translateY(-8px);z-index:2}
+#hero-cards .card:nth-child(3){transform:rotate(8deg) translateY(12px)}
+#hero-cards .card:first-child{margin-left:0}
+
+/* sections */
+section.block{padding-block:48px}
+.sec-h{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.sec-h h2{font:900 40px/1 var(--f-display);text-transform:uppercase;letter-spacing:.02em}
+.sec-h p{color:var(--muted);margin:6px 0 0;max-width:60ch}
+.eyebrow{font:500 11px var(--f-mono);letter-spacing:.2em;text-transform:uppercase;color:var(--led);margin-bottom:6px}
+
+/* legends grid */
+#legends{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.leg{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px;border-top:4px solid var(--c1)}
+.leg header{display:flex;gap:10px;align-items:center}
+.leg h3{font:800 22px/1 var(--f-display);text-transform:uppercase;letter-spacing:.02em}
+.leg header p{margin:2px 0 0;font:500 11px var(--f-mono);color:var(--muted)}
+.leg .style{font:600 11px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.leg .blurb{margin:0;color:#c6cfdd;font-size:13.5px}
+.leg ol{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:2px}
+.leg li{display:grid;grid-template-columns:34px 1fr auto;gap:8px;align-items:center;padding:4px 0;border-bottom:1px dashed rgba(255,255,255,.06);font-size:13.5px}
+.leg li span{font:500 10px var(--f-mono);color:var(--muted);letter-spacing:.08em}
+.leg li.bn b{font-weight:500;color:#b9c2d3}
+.leg li em,.slots em{font:700 12px var(--f-mono);font-style:normal;padding:2px 6px;border-radius:4px;color:#1b1407}
+.leg footer{margin-top:auto;font:500 11px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+em.t-legend{background:linear-gradient(120deg,#f8e39a,#d9a43a,#fff3c4)}
+em.t-gold{background:#e7bd4f}
+em.t-silver{background:#c9d1dc}
+em.t-bronze{background:#b07a4f;color:#1e1208}
+
+/* CARDS */
+.card{--w:178px;width:var(--w);aspect-ratio:5/7.4;max-width:100%;perspective:900px;position:relative;flex:none;border-radius:12px;cursor:default}
+.card[tabindex="0"]{cursor:pointer}
+.card .inner{position:relative;width:100%;height:100%;transition:transform .5s cubic-bezier(.2,.8,.2,1);transform-style:preserve-3d}
+.card.flipped .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+.front{padding:10px;display:flex;flex-direction:column;align-items:center;color:#1d1408;box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 14px 30px -14px #000;border:1px solid rgba(0,0,0,.35)}
+.t-bronze .front{background:linear-gradient(160deg,#7a4e2c,#c08a5c 45%,#6a4222);color:#1e1209}
+.t-silver .front{background:linear-gradient(160deg,#8d97a5,#eef2f7 45%,#8a93a0)}
+.t-gold .front{background:linear-gradient(160deg,#a5731a,#f7da82 40%,#c99526 68%,#87600f)}
+.t-legend .front{background:linear-gradient(160deg,#a26c10,#fbe39b 38%,#d7a02e 62%,#7b520c);box-shadow:0 0 0 2px #ffe9a6 inset,0 0 26px -4px rgba(255,205,90,.55),0 14px 30px -14px #000}
+.foil{position:absolute;inset:0;pointer-events:none;opacity:0}
+.t-legend .foil{opacity:1;mix-blend-mode:overlay;background:
+  linear-gradient(115deg,transparent 25%,rgba(255,255,255,.75) 33%,transparent 42%),
+  conic-gradient(from 200deg at 70% 30%,#ff7ab6,#ffd36e,#7affc4,#79b8ff,#c58bff,#ff7ab6);
+  background-size:260% 100%,100% 100%;animation:sheen 4.5s linear infinite}
+.t-gold .foil{opacity:.55;mix-blend-mode:soft-light;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.9) 38%,transparent 46%);background-size:260% 100%;animation:sheen 6s linear infinite}
+@keyframes sheen{from{background-position:130% 0,0 0}to{background-position:-130% 0,0 0}}
+.front header{width:100%;display:flex;justify-content:space-between;align-items:flex-start;position:relative}
+.ovr{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:#14100a;color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.6)}
+.ovr b{font:800 22px/1 var(--f-display);margin-top:3px}
+.ovr small{font:500 7px var(--f-mono);letter-spacing:.14em;margin-top:-10px;opacity:.7}
+.tier{font:700 9px var(--f-mono);letter-spacing:.18em;text-transform:uppercase;background:rgba(0,0,0,.78);color:#fff;padding:3px 7px;border-radius:3px}
+.t-legend .tier{background:#14100a;color:#ffd970}
+.mono{position:relative;width:74px;height:74px;border-radius:50%;margin:2px 0 8px;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--c1) 70%,#fff) ,var(--c1) 60%);box-shadow:0 0 0 3px var(--c2),0 6px 14px -6px #000}
+.mono span{font:900 30px/1 var(--f-display);color:#fff;letter-spacing:.02em;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.mono em{position:absolute;bottom:-7px;font:600 9px/1 var(--f-mono);font-style:normal;background:#111;color:#fff;padding:3px 5px;border-radius:3px;letter-spacing:.1em}
+.front h3{width:calc(100% + 20px);margin:4px -10px 0;padding:6px 8px;background:#12100c;color:#fff;font:800 17px/1.05 var(--f-display);text-transform:uppercase;letter-spacing:.03em;text-align:center}
+.meta{font:500 10px var(--f-mono);letter-spacing:.1em;margin-top:5px;text-transform:uppercase}
+.pos{display:flex;gap:4px;margin-top:5px}
+.pos span{font:700 10px var(--f-mono);border:1px solid currentColor;border-radius:3px;padding:1px 5px}
+.line{margin-top:auto;width:100%;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(0,0,0,.25);padding-top:6px}
+.line div{display:flex;flex-direction:column;align-items:center}
+.line b{font:800 18px/1 var(--f-display)}
+.line small{font:500 8px var(--f-mono);letter-spacing:.14em;opacity:.75}
+.flip{position:absolute;right:7px;bottom:7px;width:20px;height:20px;border-radius:50%;border:1px solid rgba(0,0,0,.45);background:rgba(255,255,255,.4);font:700 11px/1 var(--f-mono);display:grid;place-items:center;padding:0;color:#1a1208;z-index:3}
+.back{transform:rotateY(180deg);background:#0f1520;border:1px solid var(--line);padding:10px 10px 30px;color:var(--chalk);display:flex;flex-direction:column;gap:6px;overflow:auto}
+.back h4{font:800 14px/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.03em;color:var(--gold)}
+.bars{display:grid;gap:3px}
+.bar{display:grid;grid-template-columns:62px 1fr 20px;gap:5px;align-items:center;font:500 9px var(--f-mono);color:var(--muted)}
+.bar i{height:5px;background:#223049;border-radius:3px;overflow:hidden}
+.bar i b{display:block;height:100%;background:linear-gradient(90deg,var(--maple),var(--gold))}
+.bar em{font-style:normal;color:var(--chalk);text-align:right}
+.shoot{font:500 9px var(--f-mono);color:var(--muted)}
+.back h5{margin:2px 0 0;font:600 9px var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.splits{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.splits li{display:grid;grid-template-columns:auto 1fr auto;gap:5px;align-items:center;font-size:10px}
+.splits .mini{min-width:28px;height:15px;font-size:8px}
+.splits b{font:600 10px var(--f-mono)}
+.up{color:var(--win)}.down{color:var(--loss)}
+.note{font-size:9px;color:var(--muted);margin:0}
+.back-btn{background:#223049;color:var(--chalk);border-color:var(--line)}
+.place{position:absolute;inset:auto 0 0 0;background:rgba(10,14,21,.94);color:var(--chalk);padding:10px;display:flex;flex-direction:column;gap:6px;align-items:center;z-index:4;border-top:2px solid var(--led)}
+.place small{font:600 10px var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.place div{display:flex;gap:5px;flex-wrap:wrap;justify-content:center}
+.place [data-s]{background:var(--led);color:#1a0b05;border:0;border-radius:4px;padding:6px 9px;font:700 12px var(--f-mono)}
+.place .cancel{background:none;border:1px solid var(--line);border-radius:4px;padding:3px 10px;font:500 10px var(--f-mono);color:var(--muted)}
+.card[tabindex="0"]:hover .front{transform:translateY(-3px);transition:transform .2s}
+@media (prefers-reduced-motion:reduce){.foil{animation:none!important}.card .inner{transition:none}}
+
+/* draft */
+.draft-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;padding-block:24px 48px;align-items:start}
+.count{font:500 12px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:right;padding-top:16px}
+.pack{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+#pack-head{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.8fr) auto;gap:10px;align-items:stretch}
+#pack-head>div{background:#0b1019;border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px}
+#pack-head small{display:block;font:500 9px var(--f-mono);letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+#pack-head b{font:800 24px/1 var(--f-display);text-transform:uppercase;letter-spacing:.02em}
+.pk-team{box-shadow:inset 4px 0 0 var(--c1)}
+.pk-reroll{flex-direction:column;justify-content:center;background:transparent!important;border:0!important;padding:0!important}
+.pk-reroll button{background:linear-gradient(#f4cf6a,#d8a636);color:#2a1c04;border:0;border-radius:6px;padding:12px 16px;font:800 16px/1 var(--f-display);letter-spacing:.08em;text-transform:uppercase}
+.pk-reroll button:disabled{filter:grayscale(1) brightness(.6);cursor:not-allowed}
+#filters{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+#filters button{background:#0b1019;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font:600 11px var(--f-mono);letter-spacing:.12em;color:var(--muted)}
+#filters button.on{background:var(--chalk);color:var(--floor);border-color:var(--chalk)}
+#pack-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:16px;justify-items:center}
+.empty{color:var(--muted);font-size:14px}
+
+/* board */
+.board{background:linear-gradient(180deg,#5b3a1e,#3d2611);border:1px solid #6e4826;border-radius:12px;padding:18px;color:#f6ead3;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);position:sticky;top:calc(env(safe-area-inset-top,0px) + 72px)}
+.board h2{font:900 30px/1 var(--f-display);text-transform:uppercase;letter-spacing:.06em;text-align:center;color:#ffd98a}
+.board .rule{height:2px;background:linear-gradient(90deg,transparent,#ffd98a,transparent);margin:10px 0}
+.slots{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.slots li{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:8px;align-items:center;min-height:36px;padding:4px 8px;border-radius:6px;border:1px dashed rgba(255,217,138,.25)}
+.slots li.grp{display:block;min-height:0;border:0;padding:8px 0 2px;font:600 10px var(--f-mono);letter-spacing:.18em;text-transform:uppercase;color:#d7b88a}
+.slots li.filled{border-style:solid;background:rgba(0,0,0,.22)}
+.slots li.pop{animation:pop .5s}
+@keyframes pop{0%{background:rgba(255,106,61,.5)}100%{background:rgba(0,0,0,.22)}}
+.slots .sl{font:600 11px var(--f-mono);color:#d7b88a}
+.slots .dots{font-size:12px;color:rgba(246,234,211,.45)}
+.slots .who{min-width:0}
+.slots .who b{display:block;font:800 16px/1.05 var(--f-display);text-transform:uppercase;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slots .who small{font:500 10px var(--f-mono);color:#d7b88a}
+.ovr-line{margin-top:12px;text-align:center;font:600 11px var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:#d7b88a}
+.ovr-line b{font:900 28px/1 var(--f-display);color:#ffd98a;margin-left:6px}
+.chem-h{margin-top:14px;font:600 11px var(--f-mono);letter-spacing:.18em;text-transform:uppercase;color:#d7b88a}
+.chem{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
+.chem li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;padding:6px 8px;border-radius:6px;background:rgba(0,0,0,.25);border-left:3px solid var(--muted)}
+.chem li b{font-size:13px}
+.chem li span{grid-column:1;font-size:11.5px;color:#e4d4b8}
+.chem li em{grid-row:1/3;grid-column:2;align-self:center;font:700 13px var(--f-mono);font-style:normal}
+.chem li.good{border-color:var(--win)}.chem li.good em{color:var(--win)}
+.chem li.bad{border-color:var(--loss)}.chem li.bad em{color:#ff8a8a}
+.hint{text-align:center;font:500 11px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:#d7b88a}
+
+/* reveal */
+.reveal-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;padding-block:24px 48px;align-items:start}
+.reveal-top{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.reveal-top h1{font:900 48px/1 var(--f-display);text-transform:uppercase}
+.reveal-top p{margin:6px 0 0;color:var(--muted)}
+#reveal-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:18px;justify-items:center}
+.rv{display:flex;flex-direction:column;align-items:center;gap:6px}
+.rv-slot{font:600 11px var(--f-mono);letter-spacing:.16em;color:var(--muted)}
+
+/* season */
+.scoreboard{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;align-items:stretch;margin:24px 0 16px}
+.scoreboard>div{background:#05070b;border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+.scoreboard small{font:500 10px var(--f-mono);letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.scoreboard b{display:block;font:500 32px/1.1 var(--f-mono);color:var(--led);text-shadow:0 0 12px rgba(255,106,61,.5)}
+#s-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:none!important;border:0!important;padding:0!important}
+#sched{list-style:none;margin:0 0 18px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+#sched li{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:grid;gap:4px;border-top:3px solid var(--c1)}
+#sched li.next{outline:2px solid var(--led)}
+#sched li b{font:800 15px/1 var(--f-display);text-transform:uppercase}
+#sched li div{display:flex;gap:4px}
+#sched i{font:600 10px var(--f-mono);font-style:normal;padding:2px 6px;border-radius:3px;background:#0b1019;color:var(--muted)}
+#sched i.w{background:rgba(71,201,138,.18);color:var(--win)}#sched i.l{background:rgba(239,91,91,.15);color:var(--loss)}#sched i.nx{color:var(--led)}
+.season-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start;padding-bottom:48px}
+.tbl{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;margin-bottom:18px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{font:600 10px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.04)}
+td:nth-child(n+3),th:nth-child(n+3){text-align:right}
+tr.you td{background:rgba(255,106,61,.12);font-weight:700}
+tr.po td:first-child{box-shadow:inset 3px 0 0 var(--gold)}
+.tbl-cap{font:500 10px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:8px 10px}
+#clips{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.clip{background:#efe7d4;color:#1d1a14;border-radius:3px;padding:14px 14px 10px;box-shadow:0 10px 20px -12px #000;font-family:Georgia,'Times New Roman',serif;border-top:4px double #1d1a14}
+.clip:nth-child(odd){transform:rotate(-.4deg)}.clip:nth-child(even){transform:rotate(.35deg)}
+.clip .paper{display:flex;justify-content:space-between;gap:8px;font:600 10px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid #1d1a14;padding-bottom:5px;margin-bottom:8px}
+.clip h4{font:700 20px/1.12 Georgia,serif}
+.clip p{margin:6px 0;font-size:13px;font-style:italic;color:#4a4436}
+.clip .score{display:flex;gap:12px;align-items:center;font:500 12px var(--f-mono);border-top:1px solid #cbbf9f;padding-top:6px}
+.clip .score em{margin-left:auto;font-style:normal;font-weight:700;padding:1px 6px;border-radius:3px;background:#1d1a14;color:#efe7d4}
+.clip.w .score em{background:#1f7a4c}.clip.l .score em{background:#a33}
+.clip details{margin-top:6px;font-family:var(--f-body)}
+.clip summary{cursor:pointer;font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase}
+.clip .bx{overflow-x:auto;display:grid;gap:8px;margin-top:6px}
+.clip table{font-size:11.5px}.clip caption{text-align:left;font:700 11px var(--f-mono);text-transform:uppercase;padding:4px 0}
+.clip th{color:#6b6250;border-color:#cbbf9f;padding:3px 5px}.clip td{padding:3px 5px;border-color:#ddd2b6}
+
+/* result */
+.banner{margin:28px 0 20px;border-radius:12px;padding:28px 24px;text-align:center;border:1px solid var(--line);background:var(--panel)}
+.banner small{font:500 11px var(--f-mono);letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.banner h1{font:900 clamp(48px,8vw,92px)/1 var(--f-display);text-transform:uppercase;margin:8px 0}
+.banner p{margin:0 auto;max-width:60ch;color:#cfd6e3}
+.banner.champ{background:radial-gradient(circle at 50% 0,rgba(242,201,76,.35),transparent 60%),var(--panel);border-color:#8a6a1c}
+.banner.champ h1{color:var(--gold);text-shadow:0 0 30px rgba(242,201,76,.45)}
+.banner.ru h1{color:#c9d1dc}.banner.semi h1,.banner.miss h1{color:var(--maple)}
+.fmvp{margin-top:12px;font:600 12px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.fmvp b{color:var(--gold);margin-left:6px}
+.r-actions{display:flex;gap:10px;justify-content:center;margin:16px 0 0;flex-wrap:wrap}
+#r-bracket{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:center;margin-bottom:18px}
+#r-bracket .col{display:grid;gap:10px}
+.ser{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.ser.mine{border-color:var(--led)}
+.ser small{font:500 10px var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.ser div{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+.ser .wn{font-weight:700;color:var(--chalk)}.ser span:not(.wn){color:var(--muted)}
+.ser b{font:500 15px var(--f-mono)}
+.champ-col{text-align:center;background:linear-gradient(180deg,rgba(242,201,76,.15),transparent);border:1px solid #8a6a1c;border-radius:8px;padding:14px}
+.champ-col small{font:500 10px var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.champ-col b{display:block;font:800 22px/1.1 var(--f-display);text-transform:uppercase;color:var(--gold)}
+.r-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start;padding-bottom:48px}
+.r-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+#r-log{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+#r-log li{display:grid;grid-template-columns:90px minmax(0,1fr) auto 24px;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:13.5px}
+#r-log span{font:500 10px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+#r-log em{font:500 13px var(--f-mono);font-style:normal}
+#r-log i{font:700 12px var(--f-mono);font-style:normal;text-align:center}
+#r-log li.w i{color:var(--win)}#r-log li.l i{color:var(--loss)}
+h3.sub{font:800 22px/1 var(--f-display);text-transform:uppercase;letter-spacing:.03em;margin:22px 0 10px}
+
+/* banners page */
+.bsum{color:var(--muted)}.bsum b{color:var(--chalk)}
+.blist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.blist li{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.blist li.champ{border-color:#8a6a1c}
+.blist b{font:800 18px/1.1 var(--f-display);text-transform:uppercase}
+.blist small{display:block;color:var(--muted);font-size:12.5px}
+.blist .ro{font-size:11.5px;color:#7d889c}
+
+/* how modal */
+.modal{position:fixed;inset:0;background:rgba(3,5,9,.72);display:grid;place-items:center;z-index:50;padding:16px}
+.modal-card{background:#0f1520;border:1px solid var(--line);border-radius:12px;max-width:600px;width:100%;padding:24px;position:relative;max-height:90vh;overflow:auto}
+.modal-card h2{font:900 34px/1 var(--f-display);text-transform:uppercase;color:var(--maple);margin-bottom:14px}
+.modal-card ol{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:10px}
+.modal-card li{counter-increment:s;display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;font-size:14.5px;color:#d6dce8}
+.modal-card li::before{content:counter(s);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--maple);color:#1d1205;font:800 15px/1 var(--f-display)}
+.modal-card li b{color:var(--chalk)}
+.x{position:absolute;right:14px;top:14px;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:none;font-size:18px;line-height:1}
+.tiers{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0}
+.tiers em{font:700 11px var(--f-mono);font-style:normal;padding:3px 8px;border-radius:4px;color:#1b1407}
+footer.site{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);font-size:12.5px}
+
+@media (max-width:960px){
+  .draft-grid,.reveal-grid,.season-grid,.r-grid{grid-template-columns:minmax(0,1fr)}
+  .board{position:static}
+  .hero .wrap{grid-template-columns:minmax(0,1fr)}
+  #hero-cards{justify-content:center}
+}
+@media (max-width:600px){
+  .card{--w:156px}
+  #pack-cards,#reveal-cards{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  #hero-cards .card{--w:132px;margin-left:-40px}
+  #pack-head{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .pk-reroll{grid-column:1/-1;flex-direction:row!important;justify-content:space-between!important}
+  .scoreboard{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #s-actions{grid-column:1/-1}
+  #r-bracket,.r-two{grid-template-columns:minmax(0,1fr)}
+  .sec-h h2{font-size:32px}
+  #pack-head b{font-size:18px;overflow-wrap:anywhere}
+  #pack-head>div{min-width:0}
+  .hstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .hstats div{min-width:0}
+  #r-log li{grid-template-columns:70px minmax(0,1fr) auto 20px}
+}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <button class="brand" data-go="home"><b>DYNASTY DRAFT</b><small>All-time NBA</small></button>
+  <nav><button data-go="banners">Banners</button><button data-go="how">How it works</button></nav>
+</div></header>
+
+<main>
+<!-- HOME -->
+<div class="view" id="v-home">
+  <section class="hero"><div class="wrap">
+    <div>
+      <div class="kicker">1959 – 2025 · 70 years of hardwood</div>
+      <h1>Draft an eight.<br><span>Hang a banner.</span></h1>
+      <p class="lede">Pull a franchise and a decade, take one player, repeat. Build a starting five and a bench, then run your eight through a home-and-away gauntlet against the greatest teams ever assembled.</p>
+      <div class="hstats"><div><b id="stat-packs">0</b><small>Team-decade packs</small></div><div><b id="stat-players">0</b><small>Player cards</small></div><div><b>8</b><small>Legendary teams</small></div></div>
+      <div class="hero-actions"><button class="cta" data-go="draft">Start the draft</button><button class="ghost" data-go="how">How it works</button></div>
+    </div>
+    <div id="hero-cards"></div>
+  </div></section>
+  <section class="block"><div class="wrap">
+    <div class="sec-h"><div><div class="eyebrow">The opposition</div><h2>The gauntlet</h2><p>Eight of the best teams in league history. You play each of them home and away, and each one tests something different.</p></div></div>
+    <div id="legends"></div>
+  </div></section>
+</div>
+
+<!-- DRAFT -->
+<div class="view" id="v-draft" hidden>
+  <div class="wrap">
+    <div class="count" id="draft-count">0 of 8 drafted</div>
+    <div class="draft-grid">
+      <section class="pack" aria-label="Current pack">
+        <div id="pack-head"></div>
+        <div id="filters"><button data-f="ALL">All</button><button data-f="GUARDS">Guards</button><button data-f="WINGS">Wings</button><button data-f="BIGS">Bigs</button></div>
+        <div id="pack-cards"></div>
+      </section>
+      <aside class="board" id="board" aria-label="Your eight"></aside>
+    </div>
+  </div>
+</div>
+
+<!-- REVEAL -->
+<div class="view" id="v-reveal" hidden>
+  <div class="wrap">
+    <div class="reveal-grid">
+      <div>
+        <div class="reveal-top"><div><div class="eyebrow">Your eight</div><h1>Rotation set</h1><p>Flip any card to see how he rates and how his game travels against each legend.</p></div>
+        <div class="hero-actions"><button class="cta" id="begin">Begin the season →</button><button class="ghost" id="redraft">Redraft</button></div></div>
+        <div id="reveal-cards"></div>
+      </div>
+      <aside class="board" id="reveal-board"></aside>
+    </div>
+  </div>
+</div>
+
+<!-- SEASON -->
+<div class="view" id="v-season" hidden>
+  <div class="wrap">
+    <div class="scoreboard">
+      <div><small>Record</small><b id="s-record">0–0</b></div>
+      <div><small>Standing</small><b id="s-standing">1 / 9</b></div>
+      <div><small>Point diff</small><b id="s-diff">0</b></div>
+      <div id="s-actions"></div>
+    </div>
+    <ul id="sched"></ul>
+    <div class="season-grid">
+      <div>
+        <div class="tbl"><table id="table"><thead><tr><th>#</th><th>Team</th><th>GP</th><th>W</th><th>L</th><th>Diff</th></tr></thead><tbody></tbody></table><div class="tbl-cap">Top four make the playoffs · semis and Finals are best of seven</div></div>
+        <div id="clips"></div>
+      </div>
+      <aside class="board" id="season-board"></aside>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="view" id="v-result" hidden>
+  <div class="wrap">
+    <div class="banner" id="r-banner"></div>
+    <div class="r-actions"><button class="cta" id="again">Draft a new eight</button><button class="ghost" data-go="banners">See your banners</button></div>
+    <h3 class="sub">Playoffs</h3>
+    <div id="r-bracket"></div>
+    <div class="r-grid">
+      <div>
+        <div class="r-two">
+          <div class="tbl"><table id="r-table"><thead><tr><th>#</th><th>Team</th><th>W</th><th>L</th><th>Diff</th></tr></thead><tbody></tbody></table></div>
+          <div class="tbl"><table id="r-stats"><thead><tr><th>Player</th><th>GP</th><th>PTS</th><th>REB</th><th>AST</th></tr></thead><tbody></tbody></table></div>
+        </div>
+        <h3 class="sub">Every game</h3>
+        <ol id="r-log"></ol>
+      </div>
+      <aside class="board" id="result-board"></aside>
+    </div>
+  </div>
+</div>
+
+<!-- BANNERS -->
+<div class="view" id="v-banners" hidden>
+  <section class="block"><div class="wrap">
+    <div class="sec-h"><div><div class="eyebrow">Rafters</div><h2>Your banners</h2><p>Every season you finish is kept here, in this browser.</p></div><button class="cta" data-go="draft">Draft an eight</button></div>
+    <div id="banners"></div>
+  </div></section>
+</div>
+</main>
+
+<footer class="site"><div class="wrap">Stat lines are single-season per-game averages from each player's best year in that franchise-decade. Ratings and the sim are a fan model, not official data.</div></footer>
+
+<div class="modal" id="how" hidden role="dialog" aria-modal="true" aria-labelledby="how-h">
+  <div class="modal-card">
+    <button class="x" id="how-close" aria-label="Close">×</button>
+    <h2 id="how-h">How it works</h2>
+    <ol>
+      <li><span>A random draw gives you a <b>franchise and a decade</b>, say Chicago Bulls 1990s.</span></li>
+      <li><span>Pick <b>one player</b> from that pack for your eight-man rotation.</span></li>
+      <li><span>Cards only fit the <b>positions they played</b>. Bench spots take a guard, a wing and a big.</span></li>
+      <li><span>Don't like the draw? You can <b>reroll once</b>.</span></li>
+      <li><span>Watch your <b>chemistry</b>: a floor general, shooters, a rim protector, and not too many ball-dominant scorers.</span></li>
+      <li><span>Flip a card for its <b>matchup splits</b>: how that player's game holds up against each legend's style.</span></li>
+      <li><span>Your eight plays a <b>16-game gauntlet</b>, home and away against eight all-time teams.</span></li>
+      <li><span>The <b>top four</b> make the playoffs. Win two best-of-seven series to hang a banner.</span></li>
+    </ol>
+    <div class="tiers"><em class="t-legend">Legend 95+</em><em class="t-gold">Gold 88–94</em><em class="t-silver">Silver 80–87</em><em class="t-bronze">Bronze &lt;80</em></div>
+    <button class="cta" id="how-start">Start the draft</button>
+  </div>
+</div>
+<script>
+// name|pos|season|ovr|def|rim|shot|ppg|rpg|apg|fg%|3p%
+const TEAMS = {
+  BOS:{name:'Boston Celtics',city:'Boston',c1:'#007A33',c2:'#BA9653'},
+  LAL:{name:'Los Angeles Lakers',city:'Los Angeles',c1:'#552583',c2:'#FDB927'},
+  CHI:{name:'Chicago Bulls',city:'Chicago',c1:'#CE1141',c2:'#111111'},
+  GSW:{name:'Golden State Warriors',city:'Golden State',c1:'#1D428A',c2:'#FFC72C'},
+  PHI:{name:'Philadelphia 76ers',city:'Philadelphia',c1:'#006BB6',c2:'#ED174C'},
+  DET:{name:'Detroit Pistons',city:'Detroit',c1:'#C8102E',c2:'#1D42BA'},
+  SAS:{name:'San Antonio Spurs',city:'San Antonio',c1:'#3d4246',c2:'#C4CED4'},
+  HOU:{name:'Houston Rockets',city:'Houston',c1:'#CE1141',c2:'#C4CED4'},
+  MIA:{name:'Miami Heat',city:'Miami',c1:'#98002E',c2:'#F9A01B'},
+  UTA:{name:'Utah Jazz',city:'Utah',c1:'#3E2680',c2:'#00A3AD'},
+  PHX:{name:'Phoenix Suns',city:'Phoenix',c1:'#1D1160',c2:'#E56020'},
+  NYK:{name:'New York Knicks',city:'New York',c1:'#006BB6',c2:'#F58426'},
+  MIL:{name:'Milwaukee Bucks',city:'Milwaukee',c1:'#00471B',c2:'#EEE1C6'},
+  DEN:{name:'Denver Nuggets',city:'Denver',c1:'#0E2240',c2:'#FEC524'},
+  DAL:{name:'Dallas Mavericks',city:'Dallas',c1:'#00538C',c2:'#B8C4CA'},
+  OKC:{name:'Oklahoma City Thunder',city:'Oklahoma City',c1:'#007AC1',c2:'#EF3B24'},
+  CLE:{name:'Cleveland Cavaliers',city:'Cleveland',c1:'#860038',c2:'#FDBB30'},
+  ORL:{name:'Orlando Magic',city:'Orlando',c1:'#0077C0',c2:'#C4CED4'},
+  SEA:{name:'Seattle SuperSonics',city:'Seattle',c1:'#00653A',c2:'#FFC200'},
+  MIN:{name:'Minnesota Timberwolves',city:'Minnesota',c1:'#0C2340',c2:'#78BE20'},
+  ATL:{name:'Atlanta Hawks',city:'Atlanta',c1:'#E03A3E',c2:'#C1D32F'},
+  TOR:{name:'Toronto Raptors',city:'Toronto',c1:'#CE1141',c2:'#A1A1A4'},
+  POR:{name:'Portland Trail Blazers',city:'Portland',c1:'#E03A3E',c2:'#111111'},
+  SAC:{name:'Sacramento Kings',city:'Sacramento',c1:'#5A2D81',c2:'#63727A'},
+  IND:{name:'Indiana Pacers',city:'Indiana',c1:'#002D62',c2:'#FDBB30'},
+  WAS:{name:'Washington Bullets',city:'Washington',c1:'#002B5C',c2:'#E31837'},
+};
+
+const PACKS_RAW = {
+'BOS 1960s':`Bill Russell|C|1964-65|95|97|99|20|14.1|24.1|5.3|43.8|-
+Bob Cousy|PG|1959-60|88|62|20|62|19.4|4.7|9.5|38.4|-
+Sam Jones|SG|1964-65|87|70|25|74|25.9|5.1|2.8|45.2|-
+John Havlicek|SF/SG|1967-68|89|84|35|66|20.7|6.7|4.7|42.9|-
+Tom Heinsohn|PF|1961-62|84|62|45|55|22.1|9.5|2.1|42.9|-
+K.C. Jones|PG|1963-64|74|92|25|35|8.2|4.7|5.1|39.2|-
+Satch Sanders|PF|1963-64|76|86|55|30|11.8|9.5|1.8|41.3|-`,
+'BOS 1980s':`Larry Bird|SF/PF|1985-86|98|80|45|90|25.8|9.8|6.8|49.6|42.3
+Kevin McHale|PF/C|1986-87|93|80|80|25|26.1|9.9|2.6|60.4|0
+Robert Parish|C|1981-82|88|72|82|10|19.9|10.8|1.8|54.2|-
+Dennis Johnson|PG/SG|1984-85|84|88|30|55|15.7|4.0|6.8|46.2|18.0
+Danny Ainge|SG|1987-88|80|72|20|85|15.7|3.1|6.2|49.1|41.5
+Cedric Maxwell|SF/PF|1980-81|80|70|45|25|15.2|6.6|2.3|58.8|0
+Bill Walton|C|1985-86|80|78|85|10|7.6|6.8|2.1|56.2|0`,
+'BOS 2000s':`Paul Pierce|SF/SG|2005-06|91|75|30|80|26.8|6.7|4.7|47.1|39.7
+Kevin Garnett|PF/C|2007-08|93|97|85|25|18.8|9.2|3.4|53.9|0
+Ray Allen|SG|2007-08|86|70|20|95|17.4|3.7|3.1|44.5|39.8
+Rajon Rondo|PG|2008-09|83|86|25|25|11.9|5.2|8.2|50.5|31.3
+Antoine Walker|PF/SF|2001-02|84|60|40|60|22.1|8.8|5.0|39.4|34.4
+Kendrick Perkins|C|2007-08|72|80|80|5|6.9|6.1|1.4|61.5|0
+James Posey|SF|2007-08|74|80|35|80|7.4|4.1|1.2|43.5|38.0`,
+'BOS 2020s':`Jayson Tatum|SF/PF|2022-23|94|82|40|72|30.1|8.8|4.6|46.6|35.0
+Jaylen Brown|SG/SF|2022-23|88|76|30|65|26.6|6.9|3.5|49.1|33.5
+Jrue Holiday|PG/SG|2023-24|82|92|30|80|12.5|5.4|4.8|48.0|42.9
+Kristaps Porzingis|C/PF|2023-24|85|76|88|80|20.1|7.2|2.0|51.6|37.5
+Derrick White|SG/PG|2023-24|82|90|45|80|15.2|4.2|5.2|46.1|39.6
+Marcus Smart|PG|2021-22|78|96|20|60|12.1|3.8|5.9|41.8|33.1
+Al Horford|C/PF|2023-24|76|80|72|80|8.6|6.4|2.6|51.1|41.9`,
+'LAL 1960s':`Elgin Baylor|SF/PF|1961-62|95|60|40|50|38.3|18.6|4.6|42.8|-
+Jerry West|SG/PG|1965-66|95|86|30|85|31.3|7.1|6.1|47.3|-
+Wilt Chamberlain|C|1968-69|93|85|95|10|20.5|21.1|4.5|58.3|-
+Rudy LaRusso|PF|1961-62|78|72|50|40|17.2|10.0|2.0|42.3|-
+Gail Goodrich|SG|1967-68|76|55|20|72|13.8|2.6|2.9|41.4|-
+Darrall Imhoff|C|1966-67|72|70|78|10|7.2|13.2|2.6|47.2|-
+Dick Barnett|SG|1961-62|74|60|20|70|18.2|3.4|2.7|43.6|-`,
+'LAL 1970s':`Kareem Abdul-Jabbar|C|1976-77|97|85|95|10|26.2|13.3|3.9|57.9|-
+Jerry West|PG/SG|1971-72|94|86|30|85|25.8|4.2|9.7|47.7|-
+Wilt Chamberlain|C|1971-72|90|88|97|5|14.8|19.2|4.0|64.9|-
+Gail Goodrich|SG|1971-72|88|55|20|78|25.9|3.6|4.5|48.7|-
+Happy Hairston|PF|1971-72|78|65|50|30|13.1|13.1|2.4|46.1|-
+Jim McMillian|SF|1971-72|78|62|30|60|18.8|6.5|2.6|48.5|-
+Norm Nixon|PG|1978-79|80|65|20|60|17.1|2.8|9.0|49.2|-`,
+'LAL 1980s':`Magic Johnson|PG|1986-87|98|72|35|60|23.9|6.3|12.2|52.2|20.5
+Kareem Abdul-Jabbar|C|1979-80|95|82|92|10|24.8|10.8|4.5|60.4|0
+James Worthy|SF/PF|1989-90|88|70|40|35|21.1|6.0|3.6|54.8|30.6
+Byron Scott|SG|1987-88|84|68|20|80|21.7|4.1|4.1|52.7|34.6
+Jamaal Wilkes|SF|1980-81|84|72|35|55|22.6|5.4|2.9|52.8|0
+Norm Nixon|PG|1981-82|82|62|20|55|17.6|3.0|8.0|49.3|14.3
+Michael Cooper|SG/SF|1986-87|80|93|40|78|10.5|3.1|4.5|43.8|38.5
+A.C. Green|PF|1988-89|79|72|50|20|13.3|9.0|1.1|52.9|23.5`,
+'LAL 2000s':`Shaquille O'Neal|C|1999-00|98|78|92|5|29.7|13.6|3.8|57.4|0
+Kobe Bryant|SG/SF|2005-06|96|85|30|80|35.4|5.3|4.5|45.0|34.7
+Pau Gasol|PF/C|2008-09|89|70|78|15|18.9|9.6|3.5|56.7|0
+Lamar Odom|PF/SF|2008-09|80|70|60|45|11.3|8.2|2.6|49.2|32.0
+Glen Rice|SF|1999-00|80|55|20|90|15.9|4.1|2.2|43.0|36.7
+Andrew Bynum|C|2008-09|78|68|80|5|14.3|8.0|1.4|56.0|0
+Derek Fisher|PG|2008-09|74|70|15|78|9.9|2.3|3.2|42.4|39.7
+Rick Fox|SF|2001-02|74|72|30|72|7.9|4.7|3.5|42.9|31.4
+Robert Horry|PF|2000-01|74|74|60|78|5.2|3.7|1.6|38.7|34.8`,
+'LAL 2010s':`LeBron James|SF/PG|2019-20|96|75|40|74|25.3|7.8|10.2|49.3|34.8
+Anthony Davis|PF/C|2019-20|95|94|94|35|26.1|9.3|3.2|50.3|33.0
+Kobe Bryant|SG|2010-11|91|72|25|75|25.3|5.1|4.7|45.1|32.3
+Pau Gasol|PF/C|2010-11|88|70|78|15|18.8|10.2|3.3|52.9|0
+Andrew Bynum|C|2011-12|85|70|85|5|18.7|11.8|1.4|55.8|0
+Dwight Howard|C|2012-13|85|85|90|5|17.1|12.4|1.4|57.8|0
+Lamar Odom|PF/SF|2010-11|82|70|60|50|14.4|8.7|3.0|53.0|38.2
+Metta World Peace|SF|2009-10|76|90|35|62|11.0|4.3|3.0|41.4|35.5`,
+'CHI 1980s':`Michael Jordan|SG|1987-88|99|96|45|45|35.0|5.5|5.9|53.5|13.2
+Artis Gilmore|C|1980-81|86|72|90|5|17.9|10.1|1.7|67.0|0
+Reggie Theus|SG/PG|1982-83|83|58|20|50|23.8|3.4|5.9|47.5|24.7
+Charles Oakley|PF|1986-87|80|78|60|10|14.5|13.1|3.6|44.5|8.7
+Orlando Woolridge|SF/PF|1984-85|80|58|40|20|22.9|5.1|2.4|55.4|20.0
+Scottie Pippen|SF|1988-89|80|88|50|45|14.4|6.1|3.5|47.6|23.1
+Horace Grant|PF|1988-89|76|80|65|5|12.0|8.6|2.1|51.9|0
+John Paxson|PG|1987-88|72|60|10|82|7.3|1.3|3.7|49.3|33.0`,
+'CHI 1990s':`Michael Jordan|SG/SF|1990-91|99|92|40|60|31.5|6.0|5.5|53.9|31.2
+Scottie Pippen|SF/PF|1993-94|94|96|55|55|22.0|8.7|5.6|49.1|32.0
+Dennis Rodman|PF|1996-97|86|92|65|5|5.7|16.1|3.1|44.8|26.3
+Toni Kukoc|SF/PF|1995-96|85|62|40|70|13.1|4.0|3.5|49.0|40.3
+Horace Grant|PF/C|1991-92|84|82|70|10|14.2|10.0|2.7|57.8|0
+B.J. Armstrong|PG|1992-93|78|62|15|90|12.3|1.8|4.0|49.9|45.3
+Steve Kerr|PG/SG|1995-96|76|55|10|99|8.4|1.3|2.3|50.6|51.5
+Ron Harper|PG/SG|1996-97|76|85|30|55|6.3|3.3|2.5|40.6|36.3
+Bill Cartwright|C|1990-91|74|72|75|5|9.6|6.2|2.0|49.0|0`,
+'GSW 1960s':`Wilt Chamberlain|C|1961-62|98|75|92|10|50.4|25.7|2.4|50.6|-
+Rick Barry|SF|1966-67|93|72|30|75|35.6|9.2|3.6|45.1|-
+Nate Thurmond|C/PF|1967-68|90|92|95|5|20.5|22.0|3.6|39.9|-
+Paul Arizin|SF|1961-62|85|60|25|60|21.9|6.8|2.0|42.3|-
+Tom Gola|SG/SF|1959-60|80|78|40|45|15.0|10.4|5.5|42.4|-
+Guy Rodgers|PG|1962-63|80|60|15|40|13.9|4.7|10.4|38.5|-
+Al Attles|PG/SG|1966-67|72|82|20|45|10.8|4.2|3.9|45.4|-`,
+'GSW 2010s':`Stephen Curry|PG|2015-16|98|75|20|99|30.1|5.4|6.7|50.4|45.4
+Kevin Durant|SF/PF|2017-18|96|80|65|88|26.4|6.8|5.4|51.6|41.9
+Draymond Green|PF/C|2015-16|89|96|75|55|14.0|9.5|7.4|49.0|38.8
+Klay Thompson|SG|2015-16|88|85|25|96|22.1|3.8|2.1|47.0|42.5
+David Lee|PF|2012-13|83|55|50|15|18.5|11.2|3.5|51.9|0
+Andre Iguodala|SF/SG|2014-15|80|88|35|60|7.8|3.3|3.0|46.6|34.9
+Andrew Bogut|C|2015-16|78|85|90|5|5.4|7.0|2.3|62.7|0
+Shaun Livingston|PG|2016-17|72|72|30|20|5.1|2.0|1.8|54.7|0`,
+'PHI 1960s':`Wilt Chamberlain|C|1966-67|99|86|97|5|24.1|24.2|7.8|68.3|-
+Hal Greer|SG|1967-68|88|70|20|78|24.1|5.4|3.5|47.6|-
+Billy Cunningham|SF/PF|1968-69|87|68|40|50|24.8|12.8|3.5|42.9|-
+Chet Walker|SF|1966-67|84|66|30|60|19.3|8.1|2.1|48.8|-
+Luke Jackson|PF|1966-67|76|72|65|20|12.0|8.9|1.5|43.6|-
+Wali Jones|PG|1966-67|74|72|10|60|13.2|3.4|4.2|41.0|-`,
+'PHI 1980s':`Moses Malone|C|1982-83|96|78|82|5|24.5|15.3|1.3|50.1|0
+Julius Erving|SF|1980-81|94|78|60|35|24.6|8.0|4.4|52.1|22.2
+Charles Barkley|PF|1987-88|94|65|55|30|28.3|11.9|3.2|58.7|28.0
+Maurice Cheeks|PG|1985-86|84|88|20|35|15.4|3.4|9.2|53.7|17.6
+Andrew Toney|SG|1983-84|84|58|15|65|20.4|2.6|4.8|52.7|31.6
+Bobby Jones|PF|1982-83|80|93|70|20|9.0|4.6|1.9|54.3|0
+Darryl Dawkins|C|1979-80|78|60|80|5|14.7|8.7|1.3|52.0|0`,
+'PHI 2000s':`Allen Iverson|SG/PG|2000-01|93|80|10|55|31.1|3.8|4.6|42.0|32.0
+Dikembe Mutombo|C|2000-01|86|90|99|5|10.0|13.5|1.0|50.1|0
+Andre Iguodala|SF|2007-08|84|85|35|55|19.9|5.4|4.8|45.6|32.9
+Andre Miller|PG|2008-09|80|62|15|30|16.3|4.6|6.5|47.6|28.3
+Theo Ratliff|C|1999-00|78|82|93|5|11.4|7.7|0.8|52.4|0
+Eric Snow|PG|2002-03|76|80|10|35|12.9|3.6|6.6|45.5|28.9
+Aaron McKie|SG|2000-01|76|82|20|65|11.6|4.1|5.0|47.2|31.5`,
+'PHI 2020s':`Joel Embiid|C|2022-23|97|85|90|50|33.1|10.2|4.2|54.8|33.0
+Tyrese Maxey|PG/SG|2023-24|86|62|10|85|25.9|3.7|6.2|45.0|37.3
+James Harden|PG/SG|2022-23|86|55|20|80|21.0|6.1|10.7|44.1|38.5
+Ben Simmons|PG/PF|2020-21|80|95|55|5|14.3|7.2|6.9|55.7|30.0
+Tobias Harris|PF/SF|2020-21|80|62|40|72|19.5|6.8|3.5|51.2|39.4
+Seth Curry|SG|2020-21|72|55|10|92|12.5|2.4|2.7|46.7|45.0`,
+'DET 1980s':`Isiah Thomas|PG|1984-85|91|75|15|60|21.2|4.5|13.9|45.8|25.7
+Adrian Dantley|SF|1986-87|86|55|30|20|21.5|4.1|2.0|53.4|0
+Bill Laimbeer|C|1985-86|85|70|70|60|16.6|13.1|1.8|49.2|28.4
+Joe Dumars|SG|1988-89|82|90|20|65|17.2|2.5|5.7|50.5|48.3
+Dennis Rodman|PF/SF|1989-90|80|98|70|10|8.8|9.7|0.9|58.1|0
+Vinnie Johnson|SG|1985-86|78|60|15|55|13.2|3.4|3.4|46.2|33.3
+Mark Aguirre|SF|1988-89|78|55|30|60|15.5|3.9|2.9|48.3|35.7
+Rick Mahorn|PF|1987-88|74|78|65|5|10.7|8.4|1.5|57.4|0`,
+'DET 2000s':`Chauncey Billups|PG|2005-06|89|80|15|85|18.5|3.1|8.6|41.8|43.3
+Ben Wallace|C|2002-03|86|99|95|5|6.9|15.4|1.6|48.1|16.7
+Rasheed Wallace|PF/C|2005-06|85|86|82|75|15.1|6.8|2.3|43.0|35.7
+Richard Hamilton|SG|2005-06|84|70|10|65|20.1|3.2|3.4|49.1|45.8
+Tayshaun Prince|SF|2004-05|80|88|45|60|14.7|5.3|3.0|45.6|38.3
+Antonio McDyess|PF|2007-08|76|72|65|20|10.0|8.6|1.4|52.3|0`,
+'SAS 1990s':`David Robinson|C|1993-94|97|92|97|15|29.8|10.7|4.8|50.7|34.5
+Tim Duncan|PF/C|1998-99|92|92|90|10|21.7|11.4|2.4|49.5|14.3
+Dennis Rodman|PF|1993-94|84|92|65|5|4.7|17.3|2.3|53.4|20.8
+Sean Elliott|SF|1995-96|82|65|30|80|20.0|5.1|2.7|46.6|41.1
+Avery Johnson|PG|1994-95|78|65|10|20|13.4|2.1|8.2|52.0|19.1
+Terry Cummings|PF|1990-91|78|60|45|20|17.6|8.0|2.2|48.4|21.2
+Vinny Del Negro|SG|1995-96|72|60|10|70|14.5|3.0|3.8|49.7|38.7`,
+'SAS 2000s':`Tim Duncan|PF/C|2001-02|97|94|92|15|25.5|12.7|3.7|50.8|10.0
+Manu Ginobili|SG|2007-08|89|78|20|82|19.5|4.8|4.5|46.0|40.1
+Tony Parker|PG|2008-09|88|65|10|45|22.0|3.1|6.9|50.6|29.2
+David Robinson|C|2000-01|84|86|90|10|14.4|8.6|1.5|48.6|0
+Stephen Jackson|SF/SG|2002-03|76|70|25|70|11.8|3.6|2.3|42.5|36.0
+Bruce Bowen|SF|2005-06|72|96|35|88|7.5|3.9|1.5|42.0|43.5`,
+'SAS 2010s':`Kawhi Leonard|SF|2016-17|95|97|50|85|25.5|5.8|3.5|48.5|38.0
+Tim Duncan|PF/C|2012-13|90|90|90|10|17.8|9.9|2.7|50.2|28.6
+Tony Parker|PG|2012-13|89|65|10|60|20.3|3.0|7.6|52.2|35.3
+LaMarcus Aldridge|PF/C|2017-18|87|72|72|25|23.1|8.5|2.0|51.0|29.3
+Manu Ginobili|SG|2010-11|86|76|20|82|17.4|3.7|4.9|44.3|34.9
+Danny Green|SG/SF|2013-14|78|86|35|90|9.1|3.4|1.5|43.2|41.5
+Boris Diaw|PF|2013-14|76|70|40|60|9.1|4.1|2.8|52.0|40.0
+Tiago Splitter|C|2013-14|74|80|78|5|8.2|6.2|1.6|52.3|0
+Patty Mills|PG|2013-14|74|55|10|88|10.2|2.0|1.8|46.4|42.5`,
+'HOU 1990s':`Hakeem Olajuwon|C|1993-94|97|97|99|10|27.3|11.9|3.6|52.8|42.1
+Clyde Drexler|SG/SF|1995-96|87|70|30|60|19.3|7.2|5.8|43.3|33.2
+Charles Barkley|PF|1996-97|87|60|50|35|19.2|13.5|4.7|48.4|28.3
+Robert Horry|SF/PF|1995-96|80|78|60|75|12.0|5.8|4.0|41.0|36.6
+Sam Cassell|PG|1995-96|80|62|10|60|14.5|3.2|4.6|43.1|38.1
+Otis Thorpe|PF|1993-94|79|65|55|5|14.0|10.6|2.3|56.1|0
+Kenny Smith|PG|1993-94|76|55|10|85|11.6|2.2|4.3|48.0|40.5
+Vernon Maxwell|SG|1993-94|76|72|15|65|13.6|3.6|5.1|38.9|29.8`,
+'HOU 2010s':`James Harden|SG/PG|2018-19|96|65|20|85|36.1|6.6|7.5|44.2|36.8
+Chris Paul|PG|2017-18|91|85|15|80|18.6|5.4|7.9|46.0|38.0
+Russell Westbrook|PG|2019-20|88|65|25|30|27.2|7.9|7.0|47.2|25.8
+Dwight Howard|C|2013-14|86|85|90|5|18.3|12.2|1.8|59.1|0
+Clint Capela|C|2017-18|82|78|85|5|13.9|10.8|0.9|65.2|0
+Trevor Ariza|SF|2014-15|78|82|35|75|12.8|5.6|2.5|40.2|35.0
+Eric Gordon|SG|2016-17|78|58|15|80|16.2|2.7|2.5|40.6|37.2
+P.J. Tucker|PF|2018-19|74|86|55|72|7.3|5.8|1.2|39.6|37.7`,
+'MIA 2000s':`Dwyane Wade|SG|2008-09|95|85|40|45|30.2|5.0|7.5|49.1|31.7
+Shaquille O'Neal|C|2004-05|92|72|85|5|22.9|10.4|2.7|60.1|0
+Alonzo Mourning|C|1999-00|90|86|97|5|21.7|9.5|1.6|55.1|0
+Eddie Jones|SG/SF|2002-03|82|82|30|75|18.5|4.8|3.7|42.5|38.0
+Udonis Haslem|PF|2006-07|74|75|55|5|10.7|8.3|1.4|50.5|0
+Jason Williams|PG|2005-06|74|55|10|70|12.3|2.0|4.9|44.2|36.6
+Antoine Walker|PF/SF|2005-06|74|55|40|60|12.2|5.1|2.0|43.5|34.0`,
+'MIA 2010s':`LeBron James|SF/PF|2012-13|99|90|55|72|26.8|8.0|7.3|56.5|40.6
+Dwyane Wade|SG|2010-11|93|82|40|40|25.5|6.4|4.6|50.0|30.6
+Chris Bosh|PF/C|2010-11|87|72|70|45|18.7|8.3|1.9|49.6|24.0
+Hassan Whiteside|C|2015-16|82|72|96|5|14.2|11.8|0.4|60.6|0
+Ray Allen|SG|2012-13|80|62|15|95|10.9|2.7|1.7|44.9|41.9
+Mario Chalmers|PG|2012-13|74|72|15|75|8.6|2.2|3.5|42.9|40.9
+Shane Battier|SF/PF|2012-13|74|85|40|85|6.6|2.3|1.0|42.5|43.0
+Chris Andersen|C|2012-13|72|72|80|5|4.9|4.1|0.4|57.7|0`,
+'MIA 2020s':`Jimmy Butler|SF/SG|2019-20|89|88|40|30|19.9|6.7|6.0|45.5|24.4
+Bam Adebayo|C/PF|2019-20|86|92|80|5|15.9|10.2|5.1|55.7|0
+Tyler Herro|SG|2022-23|80|55|10|82|20.1|5.4|4.2|43.9|37.8
+Goran Dragic|PG|2019-20|78|55|10|72|16.2|3.2|5.1|44.1|36.7
+Kyle Lowry|PG|2021-22|76|76|15|72|13.4|4.5|7.5|44.0|37.7
+Duncan Robinson|SF|2019-20|74|50|10|95|13.5|3.2|1.4|47.0|44.6`,
+'UTA 1990s':`Karl Malone|PF|1996-97|94|78|60|10|27.4|9.9|4.5|55.0|0
+John Stockton|PG|1989-90|91|80|10|65|17.2|2.6|14.5|51.4|41.6
+Jeff Hornacek|SG|1997-98|80|62|15|85|14.2|3.5|4.4|48.2|44.1
+Jeff Malone|SG|1990-91|80|50|10|60|18.6|2.7|2.4|50.8|0
+Bryon Russell|SF|1996-97|74|75|30|72|10.8|4.0|1.5|48.3|40.5
+Greg Ostertag|C|1996-97|72|70|85|5|7.3|7.3|0.7|53.2|0`,
+'PHX 1990s':`Charles Barkley|PF|1992-93|95|62|55|30|25.6|12.2|5.1|52.0|30.5
+Kevin Johnson|PG|1990-91|88|62|10|35|22.2|3.5|10.1|51.6|20.5
+Jason Kidd|PG|1998-99|88|88|30|55|16.9|6.8|10.8|44.4|36.4
+Tom Chambers|PF|1989-90|84|50|50|35|27.2|7.0|2.6|50.1|26.4
+Dan Majerle|SG/SF|1992-93|82|85|30|75|16.9|4.7|3.8|46.4|38.1
+Cedric Ceballos|SF|1992-93|76|50|30|20|12.8|5.5|1.1|57.6|0
+Mark West|C|1989-90|72|70|82|5|10.5|8.4|0.6|62.5|0`,
+'PHX 2000s':`Steve Nash|PG|2005-06|93|50|10|97|18.8|4.2|10.5|51.2|43.9
+Amar'e Stoudemire|PF/C|2004-05|90|60|70|5|26.0|8.9|1.6|55.9|20.0
+Shawn Marion|SF/PF|2005-06|88|88|65|60|21.8|11.8|1.8|52.5|33.1
+Joe Johnson|SG/SF|2004-05|80|65|25|80|17.1|5.1|3.5|46.1|47.8
+Leandro Barbosa|SG|2006-07|78|50|10|80|18.1|2.7|4.0|47.6|43.4
+Boris Diaw|PF|2005-06|78|65|45|35|13.3|6.9|6.2|52.6|26.8
+Raja Bell|SG|2006-07|76|86|25|88|14.7|3.2|2.5|44.2|41.3`,
+'NYK 1970s':`Walt Frazier|PG|1971-72|91|96|20|60|23.2|6.7|5.8|51.2|-
+Willis Reed|C|1969-70|90|80|80|25|21.7|13.9|2.0|50.7|-
+Earl Monroe|SG|1974-75|84|55|10|70|20.9|4.6|2.8|45.6|-
+Dave DeBusschere|PF|1969-70|84|90|65|45|14.6|10.0|2.5|45.1|-
+Jerry Lucas|PF/C|1971-72|82|60|55|60|16.7|13.1|4.0|51.2|-
+Bill Bradley|SF|1972-73|78|65|20|72|16.1|3.5|4.0|46.4|-
+Dick Barnett|SG|1969-70|74|60|10|65|14.9|2.7|2.6|47.0|-`,
+'NYK 1990s':`Patrick Ewing|C|1989-90|93|85|92|10|28.6|10.9|2.2|55.1|25.0
+Latrell Sprewell|SF/SG|1999-00|82|80|20|55|18.6|4.3|4.0|43.5|34.6
+John Starks|SG|1993-94|80|70|10|72|19.0|3.1|5.9|42.0|33.5
+Charles Oakley|PF|1993-94|80|85|60|10|11.8|11.8|2.7|47.8|0
+Allan Houston|SG|1998-99|80|55|10|82|16.3|3.3|2.7|41.4|40.7
+Anthony Mason|PF|1994-95|78|80|55|5|9.9|8.4|3.1|56.6|0
+Larry Johnson|PF/SF|1996-97|76|58|40|50|12.8|5.2|2.3|47.6|32.4`,
+'MIL 1970s':`Kareem Abdul-Jabbar|C|1970-71|98|80|92|5|31.7|16.0|3.3|57.7|-
+Oscar Robertson|PG|1970-71|89|72|10|70|19.4|5.7|8.2|49.6|-
+Marques Johnson|SF|1978-79|88|65|45|35|25.6|7.6|3.0|55.0|-
+Bob Dandridge|SF|1970-71|80|80|35|50|18.4|7.9|3.5|50.9|-
+Brian Winters|SG|1975-76|78|60|10|72|18.2|3.4|4.2|46.4|-
+Jon McGlocklin|SG|1970-71|74|60|10|78|15.8|2.7|3.4|53.5|-`,
+'MIL 2020s':`Giannis Antetokounmpo|PF|2019-20|97|96|85|30|29.5|13.6|5.6|55.3|30.4
+Damian Lillard|PG|2023-24|88|50|10|88|24.3|4.4|7.0|42.4|35.4
+Khris Middleton|SF|2020-21|86|70|30|82|20.4|6.0|5.4|47.6|41.4
+Jrue Holiday|PG/SG|2020-21|86|94|30|68|17.7|4.5|6.1|50.3|39.2
+Brook Lopez|C|2022-23|82|90|96|72|15.9|6.7|1.3|53.1|37.4
+Bobby Portis|PF/C|2021-22|76|55|45|72|14.6|9.1|1.2|47.9|39.3`,
+'DEN 2020s':`Nikola Jokic|C|2021-22|98|62|60|55|27.1|13.8|7.9|58.3|33.7
+Jamal Murray|PG|2022-23|84|58|10|78|20.0|4.0|6.2|45.4|39.8
+Michael Porter Jr.|SF|2020-21|80|50|35|82|19.0|7.3|1.1|54.2|44.5
+Aaron Gordon|PF|2022-23|80|84|60|42|16.3|6.6|3.0|56.4|34.7
+Kentavious Caldwell-Pope|SG|2022-23|76|85|20|85|10.8|2.7|2.4|46.2|42.3
+Bruce Brown|SG/SF|2022-23|72|78|25|60|11.5|4.1|3.4|48.3|35.8`,
+'DAL 2000s':`Dirk Nowitzki|PF|2006-07|94|62|55|85|24.6|8.9|3.4|50.2|41.6
+Steve Nash|PG|2002-03|86|50|10|90|17.7|2.9|7.3|46.5|41.3
+Michael Finley|SG/SF|2000-01|82|65|20|72|21.5|5.2|4.4|45.8|35.2
+Jason Terry|SG/PG|2005-06|80|58|10|85|17.1|2.0|3.8|47.0|41.1
+Josh Howard|SF|2006-07|80|75|35|60|18.9|6.8|1.8|45.5|38.5
+Erick Dampier|C|2007-08|72|72|82|5|6.1|7.5|0.9|65.1|0`,
+'DAL 2010s':`Luka Doncic|PG/SG|2019-20|94|58|20|55|28.8|9.4|8.8|46.3|31.6
+Dirk Nowitzki|PF|2010-11|92|62|50|88|23.0|7.0|2.6|51.7|39.3
+Tyson Chandler|C|2010-11|82|86|88|5|10.1|9.4|0.4|65.4|0
+Jason Kidd|PG|2010-11|78|80|15|72|7.9|4.4|8.2|36.1|34.0
+Monta Ellis|SG|2013-14|78|52|10|55|19.0|3.6|5.7|45.1|33.0
+Shawn Marion|SF|2010-11|76|78|50|30|12.5|6.9|1.4|52.0|0`,
+'OKC 2010s':`Kevin Durant|SF|2013-14|97|72|55|85|32.0|7.4|5.5|50.3|39.1
+Russell Westbrook|PG|2016-17|95|72|25|30|31.6|10.7|10.4|42.5|34.3
+Paul George|SF|2018-19|91|94|40|80|28.0|8.2|4.1|43.8|38.6
+James Harden|SG|2011-12|84|58|15|82|16.8|4.1|3.7|49.1|39.0
+Serge Ibaka|PF/C|2011-12|82|85|97|30|9.1|7.5|0.4|53.5|0
+Steven Adams|C|2017-18|78|76|75|5|13.9|9.0|1.2|62.9|0
+Kendrick Perkins|C|2011-12|70|82|78|5|5.1|6.6|1.1|49.0|0`,
+'OKC 2020s':`Shai Gilgeous-Alexander|PG/SG|2024-25|98|86|30|72|32.7|5.0|6.4|51.9|37.5
+Jalen Williams|SF/SG|2024-25|86|84|35|72|21.6|5.3|5.1|48.4|36.6
+Chet Holmgren|PF/C|2023-24|85|82|94|72|16.5|7.9|2.4|53.0|37.0
+Isaiah Hartenstein|C|2024-25|78|78|78|5|11.2|10.7|3.8|58.0|0
+Luguentz Dort|SG|2024-25|74|94|25|75|10.1|4.1|1.6|41.2|41.2
+Alex Caruso|SG|2024-25|72|94|20|65|7.1|2.9|2.5|43.1|35.7`,
+'CLE 2010s':`LeBron James|SF/PF|2017-18|97|72|45|70|27.5|8.6|9.1|54.2|36.7
+Kyrie Irving|PG|2016-17|89|55|10|82|25.2|3.2|5.8|47.3|40.1
+Kevin Love|PF/C|2016-17|85|58|55|75|19.0|11.1|1.9|42.7|37.3
+Tristan Thompson|C|2015-16|74|72|72|5|7.8|9.0|0.8|58.8|0
+J.R. Smith|SG|2015-16|74|60|15|80|12.4|2.8|1.7|41.5|40.0
+Iman Shumpert|SG|2015-16|70|85|20|60|5.8|3.8|1.7|37.4|29.5`,
+'ORL 1990s':`Shaquille O'Neal|C|1993-94|94|72|92|5|29.3|13.2|2.4|59.9|0
+Penny Hardaway|PG/SG|1995-96|91|80|30|60|21.7|4.3|7.1|51.3|31.4
+Nick Anderson|SG/SF|1995-96|80|75|25|80|14.7|5.4|3.6|42.3|37.6
+Horace Grant|PF|1995-96|80|82|70|10|13.4|9.2|2.7|51.3|0
+Dennis Scott|SF|1995-96|78|55|15|92|17.5|3.8|3.0|44.0|42.5`,
+'SEA 1990s':`Gary Payton|PG|1995-96|92|98|20|55|19.3|4.2|7.5|48.4|32.8
+Shawn Kemp|PF|1995-96|90|62|72|10|19.6|11.4|2.2|56.1|0
+Detlef Schrempf|SF|1994-95|84|65|30|78|19.2|5.6|3.8|52.3|51.4
+Hersey Hawkins|SG|1995-96|76|72|15|80|15.6|3.6|2.9|47.4|38.3
+Sam Perkins|PF/C|1995-96|74|62|55|72|11.8|4.5|1.6|40.8|36.7
+Nate McMillan|PG/SG|1993-94|74|92|20|50|6.0|4.0|5.3|44.7|35.7`,
+'MIN 2000s':`Kevin Garnett|PF|2003-04|96|94|88|25|24.2|13.9|5.0|49.9|25.6
+Sam Cassell|PG|2003-04|85|55|10|72|19.8|3.3|7.3|48.8|39.8
+Terrell Brandon|PG|2000-01|80|60|10|72|16.0|3.8|7.5|46.6|39.1
+Latrell Sprewell|SF/SG|2003-04|78|72|20|62|16.8|3.7|3.5|40.9|33.1
+Wally Szczerbiak|SF|2001-02|78|50|15|80|18.7|4.6|3.1|50.8|45.5
+Ervin Johnson|C|2003-04|66|74|80|5|2.6|5.5|0.6|51.0|0`,
+'ATL 1980s':`Dominique Wilkins|SF|1985-86|90|58|45|35|30.3|7.9|2.6|46.8|18.6
+Doc Rivers|PG|1986-87|78|80|15|45|12.8|3.8|10.0|45.1|19.0
+Kevin Willis|PF/C|1987-88|74|60|60|5|11.6|8.0|0.9|47.4|0
+Tree Rollins|C|1983-84|72|82|94|5|5.9|7.8|0.7|52.6|0
+Randy Wittman|SG|1985-86|70|55|10|65|12.9|2.1|3.7|51.3|0
+Spud Webb|PG|1987-88|68|55|5|30|6.0|1.6|5.0|47.5|0`,
+'TOR 2010s':`Kawhi Leonard|SF|2018-19|95|94|50|82|26.6|7.3|3.3|49.6|37.1
+Kyle Lowry|PG|2016-17|86|80|15|82|22.4|4.8|7.0|46.4|41.2
+DeMar DeRozan|SG|2016-17|86|58|20|30|27.3|5.2|3.9|46.7|26.6
+Pascal Siakam|PF|2018-19|82|82|55|62|16.9|6.9|3.1|54.9|36.9
+Marc Gasol|C|2018-19|78|80|78|60|9.1|6.6|3.9|46.5|44.2
+Fred VanVleet|PG/SG|2018-19|74|72|10|75|11.0|2.6|4.8|41.0|37.8`,
+'POR 1970s':`Bill Walton|C|1976-77|94|92|97|5|18.6|14.4|3.8|52.8|-
+Maurice Lucas|PF|1976-77|84|80|55|10|20.2|11.4|2.9|46.6|-
+Sidney Wicks|PF|1971-72|82|55|50|20|24.5|11.5|4.3|42.7|-
+Geoff Petrie|SG|1970-71|80|55|10|65|24.8|4.0|4.8|44.3|-
+Lionel Hollins|PG/SG|1976-77|76|82|10|50|14.7|2.6|4.1|45.1|-
+Bob Gross|SF|1976-77|72|74|25|50|11.4|5.1|2.6|52.9|-`,
+'POR 1990s':`Clyde Drexler|SG/SF|1991-92|91|72|35|50|25.0|6.6|6.7|47.0|33.7
+Terry Porter|PG|1990-91|84|62|10|80|17.0|3.5|8.0|51.5|41.5
+Buck Williams|PF|1990-91|78|80|60|5|11.7|9.4|1.2|60.2|0
+Clifford Robinson|PF/C|1992-93|78|68|65|30|19.1|6.6|2.2|47.3|0
+Jerome Kersey|SF|1990-91|76|70|40|10|14.8|6.8|3.1|47.8|0
+Kevin Duckworth|C|1990-91|72|58|60|5|15.8|6.6|0.8|48.1|0`,
+'SAC 2000s':`Chris Webber|PF|2000-01|91|72|70|10|27.1|11.1|4.2|48.1|7.1
+Peja Stojakovic|SF|2003-04|86|55|20|95|24.2|6.3|2.1|48.0|43.3
+Mike Bibby|PG|2004-05|82|50|10|80|19.6|4.2|6.8|43.2|36.1
+Vlade Divac|C|2000-01|80|62|70|35|12.0|10.0|3.7|47.1|0
+Doug Christie|SG|2000-01|78|92|25|65|12.0|4.6|3.8|41.1|34.8
+Bobby Jackson|PG/SG|2002-03|76|58|10|70|15.2|3.7|3.1|46.3|35.4`,
+'IND 1990s':`Reggie Miller|SG|1996-97|88|58|10|97|21.6|3.5|3.4|44.2|42.7
+Rik Smits|C|1997-98|80|55|75|10|16.7|6.9|1.7|49.5|0
+Jalen Rose|SF/SG|1999-00|80|55|15|72|18.2|4.8|4.0|47.1|39.1
+Mark Jackson|PG|1996-97|78|50|10|60|10.5|4.5|11.4|41.6|36.8
+Dale Davis|PF/C|1999-00|76|78|72|5|10.0|9.9|0.9|50.2|0
+Chris Mullin|SF|1997-98|76|55|10|92|11.3|3.0|2.3|48.1|44.0
+Antonio Davis|PF|1997-98|74|72|65|5|9.6|7.6|0.7|49.1|0`,
+'WAS 1970s':`Elvin Hayes|PF|1974-75|92|72|80|10|23.0|12.2|2.5|44.3|-
+Wes Unseld|C|1974-75|84|80|60|10|9.2|14.8|4.1|50.2|-
+Phil Chenier|SG|1974-75|82|65|10|65|21.8|3.9|3.2|46.6|-
+Bob Dandridge|SF|1977-78|82|78|35|50|19.3|6.5|3.5|47.1|-
+Kevin Porter|PG|1974-75|78|55|10|40|12.6|2.1|8.0|48.9|-
+Mitch Kupchak|PF|1977-78|72|58|40|10|10.0|6.6|1.0|53.7|-`,
+};
+
+// Legendary opponents. w = what the style punishes/rewards in YOUR players (sco,ply,shot,reb,def,rim)
+const LEGENDS_RAW = [
+ {id:'CHI96',team:'CHI',name:'1995–96 Bulls',season:'1995-96',record:'72–10',style:'Suffocating wings',
+  blurb:'Jordan and Pippen hunt the perimeter. Rodman owns the glass.',w:{def:1,reb:.6,sco:.3},
+  roster:`Ron Harper|PG|1995-96|78|85|30|55|7.4|2.7|2.6|44.3|26.9
+Michael Jordan|SG|1995-96|99|92|40|65|30.4|6.6|4.3|49.5|42.7
+Scottie Pippen|SF|1995-96|93|96|55|65|19.4|6.4|5.9|46.3|37.4
+Dennis Rodman|PF|1995-96|87|92|65|5|5.5|14.9|2.5|48.0|11.1
+Luc Longley|C|1995-96|74|70|72|5|9.1|5.1|1.9|46.9|0
+Toni Kukoc|SF|1995-96|85|62|40|72|13.1|4.0|3.5|49.0|40.3
+Steve Kerr|SG|1995-96|76|55|10|99|8.4|1.3|2.3|50.6|51.5
+Bill Wennington|C|1995-96|68|60|60|10|5.3|2.5|0.5|49.3|0`},
+ {id:'BOS86',team:'BOS',name:'1985–86 Celtics',season:'1985-86',record:'67–15',style:'Front-line clinic',
+  blurb:'Bird, McHale, Parish and Walton. Win the boards or lose the night.',w:{reb:.9,rim:.7,ply:.4},
+  roster:`Dennis Johnson|PG|1985-86|84|88|30|50|15.6|3.4|5.8|43.5|19.0
+Danny Ainge|SG|1985-86|79|72|20|80|10.7|2.9|5.1|50.4|35.6
+Larry Bird|SF|1985-86|98|80|45|90|25.8|9.8|6.8|49.6|42.3
+Kevin McHale|PF|1985-86|92|80|80|20|21.3|8.1|2.7|57.4|0
+Robert Parish|C|1985-86|87|72|80|5|16.1|9.5|1.8|54.9|0
+Bill Walton|C|1985-86|80|78|85|5|7.6|6.8|2.1|56.2|0
+Scott Wedman|SF|1985-86|74|62|30|70|8.0|2.4|1.1|47.6|43.2
+Jerry Sichting|PG|1985-86|72|58|10|80|6.5|1.3|2.3|57.0|25.0`},
+ {id:'LAL87',team:'LAL',name:'1986–87 Lakers',season:'1986-87',record:'65–17',style:'Showtime',
+  blurb:'Magic pushes every miss. Get back on defense or get buried.',w:{def:.6,ply:.5,sco:.4},
+  roster:`Magic Johnson|PG|1986-87|98|72|35|60|23.9|6.3|12.2|52.2|20.5
+Byron Scott|SG|1986-87|84|68|20|80|17.0|3.5|3.4|48.9|43.6
+James Worthy|SF|1986-87|89|70|40|30|19.4|5.7|2.8|53.9|0
+A.C. Green|PF|1986-87|79|72|50|20|10.8|7.8|1.1|53.8|0
+Kareem Abdul-Jabbar|C|1986-87|88|78|85|5|17.5|6.7|2.6|56.4|0
+Michael Cooper|SG|1986-87|80|93|40|78|10.5|3.1|4.5|43.8|38.5
+Mychal Thompson|C|1986-87|78|65|60|5|10.1|5.9|1.1|48.0|0
+Kurt Rambis|PF|1986-87|70|70|50|5|5.7|5.8|1.0|52.0|0`},
+ {id:'GSW17',team:'GSW',name:'2016–17 Warriors',season:'2016-17',record:'67–15',style:'Pace & space',
+  blurb:'Five shooters, switch everything. Your closeouts decide it.',w:{shot:1,def:.8},
+  roster:`Stephen Curry|PG|2016-17|96|75|20|99|25.3|4.5|6.6|46.8|41.1
+Klay Thompson|SG|2016-17|89|86|25|96|22.3|3.7|2.1|46.8|41.4
+Kevin Durant|SF|2016-17|97|82|70|88|25.1|8.3|4.8|53.7|37.5
+Draymond Green|PF|2016-17|89|99|75|55|10.2|7.9|7.0|41.8|30.8
+Zaza Pachulia|C|2016-17|70|70|65|5|6.1|5.9|1.9|53.4|0
+Andre Iguodala|SF|2016-17|80|88|35|60|7.6|4.0|3.4|52.8|36.2
+Shaun Livingston|PG|2016-17|72|72|30|20|5.1|2.0|1.8|54.7|0
+David West|PF|2016-17|72|70|60|20|4.6|3.0|2.2|53.6|0`},
+ {id:'PHI67',team:'PHI',name:'1966–67 76ers',season:'1966-67',record:'68–13',style:"Wilt's wall",
+  blurb:'Chamberlain at his most complete. Bring size or bring nothing.',w:{rim:1,reb:1},
+  roster:`Wali Jones|PG|1966-67|74|72|10|60|13.2|3.4|4.2|41.0|-
+Hal Greer|SG|1966-67|88|70|20|78|22.1|5.3|3.8|45.9|-
+Chet Walker|SF|1966-67|84|66|30|60|19.3|8.1|2.1|48.8|-
+Luke Jackson|PF|1966-67|76|72|65|20|12.0|8.9|1.5|43.6|-
+Wilt Chamberlain|C|1966-67|99|86|97|5|24.1|24.2|7.8|68.3|-
+Billy Cunningham|SF|1966-67|85|68|40|50|18.5|7.3|2.5|45.9|-
+Larry Costello|PG|1966-67|70|65|10|65|7.4|1.6|2.1|43.0|-
+Matt Guokas|SG|1966-67|66|62|10|50|3.9|1.6|1.6|42.0|-`},
+ {id:'LAL01',team:'LAL',name:'2000–01 Lakers',season:'2000-01',record:'56–26 · 15–1 in playoffs',style:'Shaq & Kobe',
+  blurb:'Prime Shaq on the block, Kobe everywhere else. Who guards the paint?',w:{rim:1,def:.6},
+  roster:`Derek Fisher|PG|2000-01|74|72|15|80|11.5|3.0|4.4|41.2|39.7
+Kobe Bryant|SG|2000-01|95|85|30|72|28.5|5.9|5.0|46.4|30.5
+Rick Fox|SF|2000-01|74|72|30|72|9.6|4.0|3.2|44.4|39.3
+Horace Grant|PF|2000-01|76|80|65|10|8.5|7.1|1.6|46.2|0
+Shaquille O'Neal|C|2000-01|98|78|92|5|28.7|12.7|3.7|57.2|0
+Robert Horry|PF|2000-01|74|74|60|75|5.2|3.7|1.6|38.7|34.8
+Ron Harper|PG|2000-01|72|78|30|50|6.5|3.4|2.3|43.8|27.4
+Brian Shaw|SG|2000-01|70|65|20|60|5.0|3.0|2.9|40.4|31.5`},
+ {id:'MIA13',team:'MIA',name:'2012–13 Heat',season:'2012-13',record:'66–16',style:'Positionless',
+  blurb:'LeBron at his peak, shooters in every corner, a 27-game streak.',w:{def:.7,shot:.6,sco:.3},
+  roster:`Mario Chalmers|PG|2012-13|74|72|15|75|8.6|2.2|3.5|42.9|40.9
+Dwyane Wade|SG|2012-13|90|82|40|40|21.2|5.0|5.1|52.1|25.8
+LeBron James|SF|2012-13|99|90|55|72|26.8|8.0|7.3|56.5|40.6
+Shane Battier|PF|2012-13|74|85|40|85|6.6|2.3|1.0|42.5|43.0
+Chris Bosh|C|2012-13|87|76|72|55|16.6|6.8|1.7|53.5|28.4
+Ray Allen|SG|2012-13|80|62|15|95|10.9|2.7|1.7|44.9|41.9
+Chris Andersen|C|2012-13|72|72|80|5|4.9|4.1|0.4|57.7|0
+Udonis Haslem|PF|2012-13|70|76|55|5|3.9|5.4|0.4|51.4|0`},
+ {id:'SAS14',team:'SAS',name:'2013–14 Spurs',season:'2013-14',record:'62–20',style:'The beautiful game',
+  blurb:'The ball never sticks. Lazy rotations get punished on every trip.',w:{def:.8,ply:.6,shot:.4},
+  roster:`Tony Parker|PG|2013-14|88|65|10|60|16.7|2.3|5.7|49.9|37.3
+Danny Green|SG|2013-14|78|86|35|90|9.1|3.4|1.5|43.2|41.5
+Kawhi Leonard|SF|2013-14|86|95|45|72|12.8|6.2|2.0|52.2|37.9
+Tim Duncan|PF|2013-14|89|90|90|10|15.1|9.7|3.0|49.0|0
+Tiago Splitter|C|2013-14|74|80|78|5|8.2|6.2|1.6|52.3|0
+Manu Ginobili|SG|2013-14|85|76|20|80|12.3|3.0|4.3|46.9|34.9
+Patty Mills|PG|2013-14|74|55|10|88|10.2|2.0|1.8|46.4|42.5
+Boris Diaw|PF|2013-14|76|70|40|60|9.1|4.1|2.8|52.0|40.0`},
+];
+// ---------- ratings model ----------
+const PACE = {'1950s':120,'1960s':126,'1970s':108,'1980s':102,'1990s':93,'2000s':92,'2010s':97,'2020s':100};
+const FGB  = {'1950s':40,'1960s':43,'1970s':46,'1980s':49,'1990s':46,'2000s':45,'2010s':46,'2020s':48};
+const clamp=(x,a=25,b=99)=>Math.max(a,Math.min(b,Math.round(x)));
+const decadeOf=s=>{const y=+s.slice(0,4)+1; return (Math.floor((y===2000?1999:y)/10)*10)+'s'};
+const ATTRS=[['sco','Scoring'],['ply','Playmaking'],['shot','Shooting'],['reb','Rebounding'],['def','Defense'],['rim','Rim protection']];
+
+function parsePlayer(line,team,decade){
+  const [name,pos,season,ovr,def,rim,shot,ppg,rpg,apg,fg,tp]=line.split('|');
+  const dec=decade||decadeOf(season); const f=100/PACE[dec];
+  const p={name,team,season,decade:dec,pos:pos.split('/'),ovr:+ovr,def:+def,rim:+rim,shot:+shot,
+    ppg:+ppg,rpg:+rpg,apg:+apg,fg:+fg,tp:tp==='-'?null:+tp};
+  p.sco=clamp(30+p.ppg*f*2.15+(p.fg-FGB[dec])*0.7);
+  p.ply=clamp(32+p.apg*f*6.2);
+  p.reb=clamp(28+p.rpg*f*4.6);
+  p.id=name+'|'+season;
+  return p;
+}
+const PACKS=Object.entries(PACKS_RAW).map(([k,v])=>{const [team,decade]=k.split(' ');
+  return {id:k,team,decade,players:v.trim().split('\n').map(l=>parsePlayer(l.trim(),team,decade))}});
+const LEGENDS=LEGENDS_RAW.map(L=>({...L,players:L.roster.trim().split('\n').map(l=>parsePlayer(l.trim(),L.team))}));
+const ALLP=PACKS.flatMap(p=>p.players);
+
+const tierOf=o=>o>=95?'legend':o>=88?'gold':o>=80?'silver':'bronze';
+const TIERNAME={legend:'Legend',gold:'Gold',silver:'Silver',bronze:'Bronze'};
+
+// split vs a legend's style, as a fraction (e.g. 0.12 = +12%)
+function split(p,L){let s=0,t=0; for(const k in L.w){s+=L.w[k]*(p[k]-72); t+=L.w[k];} return s/t/100*0.8;}
+
+// ---------- roster ----------
+const SLOTS=[
+ {id:'PG',label:'PG',full:'Point guard',acc:['PG'],min:36,start:true},
+ {id:'SG',label:'SG',full:'Shooting guard',acc:['SG'],min:36,start:true},
+ {id:'SF',label:'SF',full:'Small forward',acc:['SF'],min:36,start:true},
+ {id:'PF',label:'PF',full:'Power forward',acc:['PF'],min:36,start:true},
+ {id:'C', label:'C', full:'Center',acc:['C'],min:36,start:true},
+ {id:'B6',label:'6TH',full:'Sixth man · guard',acc:['PG','SG'],min:22},
+ {id:'B7',label:'7TH',full:'Bench wing',acc:['SG','SF','PF'],min:20},
+ {id:'B8',label:'8TH',full:'Bench big',acc:['PF','C'],min:18},
+];
+const fits=(p,slot)=>p.pos.some(x=>slot.acc.includes(x));
+
+// ---------- team model ----------
+function teamModel(list){ // list: [{p,min,start}]
+  const tot=list.reduce((a,x)=>a+x.min,0)||1;
+  const wavg=fn=>list.reduce((a,x)=>a+fn(x.p)*x.min,0)/tot;
+  const OFF=wavg(p=>.5*p.ovr+.3*p.sco+.1*p.ply+.1*p.shot);
+  const DEF=wavg(p=>.55*p.ovr+.3*p.def+.15*p.rim);
+  const REB=wavg(p=>p.reb);
+  const pace=wavg(p=>PACE[p.decade]);
+  const st=list.filter(x=>x.start).map(x=>x.p);
+  const chem=[];
+  if(st.length){
+    const mp=Math.max(...st.map(p=>p.ply));
+    chem.push(mp>=86?{k:'Floor general',v:2,txt:'Elite creator in the starting five',s:'good'}:mp>=76?{k:'Floor general',v:0,txt:'Someone can run the offense',s:'ok'}:{k:'Floor general',v:-3,txt:'No real playmaker starting',s:'bad'});
+    const sh=st.filter(p=>p.shot>=78).length;
+    const sv=[-4,-2,0,1.5,2.5,3][sh];
+    chem.push({k:'Spacing',v:sv,txt:sh+' shooter'+(sh===1?'':'s')+' in the five',s:sv>0?'good':sv===0?'ok':'bad'});
+    const mr=Math.max(...st.map(p=>p.rim));
+    chem.push(mr>=90?{k:'Rim protection',v:2,txt:'An anchor at the rim',s:'good',d:1}:mr>=78?{k:'Rim protection',v:0,txt:'Serviceable paint defense',s:'ok',d:1}:{k:'Rim protection',v:-3,txt:'The paint is wide open',s:'bad',d:1});
+    const stars=st.filter(p=>p.sco>=92).length;
+    if(stars>2) chem.push({k:'One ball',v:-2.5*(stars-2),txt:stars+' high-usage scorers share one ball',s:'bad'});
+    const rb=st.reduce((a,p)=>a+p.reb,0)/st.length;
+    chem.push(rb>=66?{k:'Glass',v:1.5,txt:'Big rebounding five',s:'good'}:rb>=55?{k:'Glass',v:0,txt:'Holds its own on the boards',s:'ok'}:{k:'Glass',v:-2,txt:'Gets beaten on the boards',s:'bad'});
+  }
+  const fitO=chem.filter(c=>!c.d&&c.k!=='Glass').reduce((a,c)=>a+c.v,0);
+  const fitD=chem.filter(c=>c.d).reduce((a,c)=>a+c.v,0);
+  const fitR=(chem.find(c=>c.k==='Glass')||{v:0}).v;
+  const ovr=list.length?Math.round(list.reduce((a,x)=>a+x.p.ovr*x.min,0)/tot):0;
+  return {OFF,DEF,REB,pace,chem,fitO,fitD,fitR,ovr};
+}
+function rosterList(roster){return SLOTS.filter(s=>roster[s.id]).map(s=>({p:roster[s.id],min:s.min,start:!!s.start,slot:s.id}))}
+
+// ---------- RNG / sim ----------
+const rnd=Math.random; const gauss=()=>{let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+function makeSide(t){ // t: {id,name,short,list,legend?, L?}
+  const m=teamModel(t.list); return {...t,m};
+}
+const K={o:.4,d:.35,leg:4,legD:3};
+function expected(A,B,homeA,matchA){
+  const fo=t=>t.legend?Math.max(0,t.m.fitO):t.m.fitO, fd=t=>t.legend?Math.max(0,t.m.fitD):t.m.fitD, fr=t=>t.legend?Math.max(0,t.m.fitR):t.m.fitR;
+  return 112+K.o*(A.m.OFF-80)-K.d*(B.m.DEF-78)+.12*(A.m.REB-B.m.REB)+fo(A)-fd(B)+.5*(fr(A)-fr(B))+(A.legend?K.leg:0)-(B.legend?K.legD:0)+(homeA?1.8:-1.8)+(matchA||0);
+}
+function matchupPts(userList,L){const tot=userList.reduce((a,x)=>a+x.min,0); return userList.reduce((a,x)=>a+split(x.p,L)*x.min,0)/tot*28;}
+
+function distribute(total,weights){
+  const s=weights.reduce((a,b)=>a+b,0)||1; const raw=weights.map(w=>w/s*total); const fl=raw.map(Math.floor);
+  let rem=total-fl.reduce((a,b)=>a+b,0); const order=raw.map((r,i)=>[r-fl[i],i]).sort((a,b)=>b[0]-a[0]);
+  for(let i=0;i<rem;i++) fl[order[i%order.length][1]]++; return fl;
+}
+function box(side,pts,poss){
+  const L=side.list; const n=()=>Math.exp(gauss()*.35);
+  const P=distribute(pts,L.map(x=>x.min*Math.pow(x.p.sco/60,3)*n()));
+  const treb=Math.max(28,Math.round(44*poss/100+(side.m.REB-60)*.25+gauss()*4));
+  const R=distribute(treb,L.map(x=>x.min*Math.pow(x.p.reb/55,3)*n()));
+  const tast=Math.max(12,Math.round(pts*.23+gauss()*3));
+  const A=distribute(tast,L.map(x=>x.min*Math.pow(x.p.ply/60,3)*n()));
+  return L.map((x,i)=>({name:x.p.name,p:x.p,min:x.min,pts:P[i],reb:R[i],ast:A[i]}));
+}
+function playGame(H,A,opts={}){ // H home
+  const poss=Math.round((H.m.pace+A.m.pace)/2+gauss()*3);
+  let eh=expected(H,A,true,opts.matchH), ea=expected(A,H,false,opts.matchA);
+  if(opts.neutral){eh-=1.8;ea+=1.8;}
+  let sh=Math.round(poss*eh/100+gauss()*9), sa=Math.round(poss*ea/100+gauss()*9); let ot=0;
+  while(sh===sa){ot++; sh+=Math.round(11*eh/112+gauss()*3); sa+=Math.round(11*ea/112+gauss()*3);}
+  const bh=box(H,sh,poss+ot*10), ba=box(A,sa,poss+ot*10);
+  return {home:H.id,away:A.id,hs:sh,as:sa,ot,bh,ba,win:sh>sa?H.id:A.id};
+}
+
+// ---------- headlines ----------
+const sur=n=>{const parts=n.split(' ');return parts.length>1?parts.slice(1).join(' '):n};
+function headline(g,teams){
+  const W=g.win===g.home?teams[g.home]:teams[g.away], Lt=g.win===g.home?teams[g.away]:teams[g.home];
+  const wb=g.win===g.home?g.bh:g.ba; const ws=Math.max(g.hs,g.as), ls=Math.min(g.hs,g.as), m=ws-ls;
+  const star=[...wb].sort((a,b)=>(b.pts+1.2*b.reb+1.5*b.ast)-(a.pts+1.2*a.reb+1.5*a.ast))[0];
+  const td=star.pts>=10&&star.reb>=10&&star.ast>=10;
+  let h;
+  if(g.ot) h=`${W.short} outlast ${Lt.short} in ${g.ot>1?g.ot+' overtimes':'overtime'}`;
+  else if(td) h=`${sur(star.name)} triple-double powers ${W.short}`;
+  else if(star.pts>=45) h=`${sur(star.name)} erupts for ${star.pts}`;
+  else if(star.reb>=20) h=`${sur(star.name)} owns the glass with ${star.reb} boards`;
+  else if(m>=20) h=`${W.short} bury ${Lt.short} by ${m}`;
+  else if(m<=3) h=`${sur(star.name)} seals it late as ${W.short} edge ${Lt.short}`;
+  else h=`${sur(star.name)}'s ${star.pts} carries ${W.short} past ${Lt.short}`;
+  const sub=`${star.name} had ${star.pts} points, ${star.reb} rebounds and ${star.ast} assists. ${W.short} ${ws}, ${Lt.short} ${ls}${g.ot?' (OT)':''}.`;
+  return {h,sub,star};
+}
+const PAPERS=['The Hardwood Herald','The Baseline Bugle','The Paint Gazette','The Fast Break Daily','The Tip-Off Times','The Rim Courier'];
+
+// ---------- state ----------
+const S={view:'home',roster:{},rerolls:1,pack:null,lastPack:null,drafted:new Set(),filter:'ALL',season:null};
+const $=s=>document.querySelector(s); const $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const initials=n=>n.replace(/[^A-Za-z ]/g,'').split(' ').filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+const fmtSeason=s=>s.replace('-','–');
+const pct=x=>(x>=0?'+':'−')+Math.abs(Math.round(x*100))+'%';
+
+function show(v){S.view=v; $$('.view').forEach(e=>e.hidden=e.id!=='v-'+v); window.scrollTo(0,0); renderNav();}
+function renderNav(){}
+
+// ---------- card ----------
+function cardHTML(p,{place=false,small=false,flipId}={}){
+  const t=TEAMS[p.team], tier=tierOf(p.ovr);
+  const tp=p.tp!=null&&p.tp>0?p.tp.toFixed(1):'—';
+  const bars=ATTRS.map(([k,l])=>`<div class="bar"><span>${l}</span><i><b style="width:${p[k]}%"></b></i><em>${p[k]}</em></div>`).join('');
+  const sp=LEGENDS.map(L=>({L,v:split(p,L)})).sort((a,b)=>b.v-a.v).map(({L,v})=>`<li><span class="mini" style="--c1:${TEAMS[L.team].c1}">${L.team}</span><span>${L.name.replace(/^\d{4}–(\d{2}) /,"'$1 ")}</span><b class="${v>=0?'up':'down'}">${pct(v)}</b></li>`).join('');
+  return `<article class="card t-${tier}${small?' sm':''}" data-id="${esc(p.id)}" tabindex="${place?0:-1}" aria-label="${esc(p.name)}, ${p.pos.join('/')}, ${p.season}, overall ${p.ovr}">
+  <div class="inner">
+   <div class="face front">
+    <div class="foil"></div>
+    <header><div class="ovr"><b>${p.ovr}</b><small>OVR</small></div><div class="tier">${TIERNAME[tier]}</div></header>
+    <div class="mono" style="--c1:${t.c1};--c2:${t.c2}"><span>${initials(p.name)}</span><em>${p.team}</em></div>
+    <h3>${esc(p.name)}</h3>
+    <div class="meta">${p.team} · ${fmtSeason(p.season)}</div>
+    <div class="pos">${p.pos.map(x=>`<span>${x}</span>`).join('')}</div>
+    <div class="line"><div><b>${p.ppg.toFixed(1)}</b><small>PTS</small></div><div><b>${p.rpg.toFixed(1)}</b><small>REB</small></div><div><b>${p.apg.toFixed(1)}</b><small>AST</small></div></div>
+    <button class="flip" aria-label="How ${esc(p.name)} rates">i</button>
+    <div class="place" hidden></div>
+   </div>
+   <div class="face back">
+    <h4>${esc(p.name)} · ${fmtSeason(p.season)}</h4>
+    <div class="bars">${bars}</div>
+    <div class="shoot">FG ${p.fg.toFixed(1)}% · 3P ${tp}${p.tp!=null&&p.tp>0?'%':''}</div>
+    <h5>Matchup splits</h5>
+    <ul class="splits">${sp}</ul>
+    <p class="note">How his game holds up against each legend's style. Era-adjusted for pace.</p>
+    <button class="flip back-btn" aria-label="Back to the card">↺</button>
+   </div>
+  </div></article>`;
+}
+document.addEventListener('click',e=>{
+  const f=e.target.closest('.flip'); if(f){e.stopPropagation(); f.closest('.card').classList.toggle('flipped'); return;}
+});
+
+// ---------- home ----------
+function renderHome(){
+  const pick=n=>ALLP.find(p=>p.name===n);
+  $('#hero-cards').innerHTML=[pick('Magic Johnson'),pick('Michael Jordan'),pick('Stephen Curry')].map(p=>cardHTML(p)).join('');
+  $('#stat-packs').textContent=PACKS.length;
+  $('#stat-players').textContent=ALLP.length;
+  $('#legends').innerHTML=LEGENDS.map(L=>{const t=TEAMS[L.team]; return `<article class="leg" style="--c1:${t.c1};--c2:${t.c2}">
+    <header><span class="mini">${L.team}</span><div><h3>${L.name}</h3><p>${L.record}</p></div></header>
+    <div class="style">${L.style}</div><p class="blurb">${L.blurb}</p>
+    <ol>${L.players.map((p,i)=>`<li class="${i<5?'st':'bn'}"><span>${i<5?SLOTS[i].label:'BN'}</span><b>${esc(p.name)}</b><em class="t-${tierOf(p.ovr)}">${p.ovr}</em></li>`).join('')}</ol>
+    <footer>Rating ${teamModel(L.players.map((p,i)=>({p,min:SLOTS[i].min,start:i<5}))).ovr}</footer></article>`}).join('');
+  renderBanners();
+}
+
+// ---------- draft ----------
+function openSlots(){return SLOTS.filter(s=>!S.roster[s.id])}
+function eligible(pack){const open=openSlots(); return pack.players.filter(p=>!S.drafted.has(p.name)&&open.some(s=>fits(p,s)))}
+function drawPack(){
+  const cands=PACKS.filter(p=>p.id!==S.lastPack&&eligible(p).length);
+  const pool=cands.length?cands:PACKS.filter(p=>eligible(p).length);
+  S.pack=pool[Math.floor(rnd()*pool.length)]; S.lastPack=S.pack.id;
+}
+function startDraft(){S.roster={};S.rerolls=1;S.drafted=new Set();S.filter='ALL';S.lastPack=null;drawPack();show('draft');renderDraft();}
+function renderDraft(){
+  const pk=S.pack, t=TEAMS[pk.team];
+  const filled=SLOTS.length-openSlots().length;
+  $('#draft-count').textContent=`${filled} of 8 drafted`;
+  $('#pack-head').innerHTML=`<div class="pk-team" style="--c1:${t.c1};--c2:${t.c2}"><span class="mini">${pk.team}</span><div><small>Franchise</small><b>${t.name}</b></div></div>
+    <div class="pk-dec"><small>Decade</small><b>${pk.decade}</b></div>
+    <div class="pk-reroll"><button id="reroll" ${S.rerolls?'':'disabled'}>Reroll pack</button><small>${S.rerolls} reroll${S.rerolls===1?'':'s'} left</small></div>`;
+  $('#reroll').onclick=()=>{if(!S.rerolls)return;S.rerolls--;drawPack();renderDraft();};
+  let ps=eligible(pk);
+  const F={ALL:()=>true,GUARDS:p=>p.pos.some(x=>x==='PG'||x==='SG'),WINGS:p=>p.pos.some(x=>x==='SF'||x==='SG'),BIGS:p=>p.pos.some(x=>x==='PF'||x==='C')};
+  ps=ps.filter(F[S.filter]).sort((a,b)=>b.ovr-a.ovr);
+  $$('#filters button').forEach(b=>b.classList.toggle('on',b.dataset.f===S.filter));
+  $('#pack-cards').innerHTML=ps.map(p=>cardHTML(p,{place:true})).join('')||'<p class="empty">No one in this filter fits an open spot.</p>';
+  $$('#pack-cards .card').forEach(c=>{
+    const p=pk.players.find(x=>x.id===c.dataset.id);
+    const openPlace=()=>{ if(c.classList.contains('flipped'))return;
+      $$('#pack-cards .place').forEach(x=>x.hidden=true);
+      const pl=c.querySelector('.place'); const opts=openSlots().filter(s=>fits(p,s));
+      pl.innerHTML=`<small>Place at</small><div>${opts.map(s=>`<button data-s="${s.id}">${s.label}</button>`).join('')}</div><button class="cancel">Cancel</button>`;
+      pl.hidden=false;
+      pl.querySelectorAll('[data-s]').forEach(b=>b.onclick=ev=>{ev.stopPropagation(); place(p,b.dataset.s);});
+      pl.querySelector('.cancel').onclick=ev=>{ev.stopPropagation(); pl.hidden=true;};
+    };
+    c.addEventListener('click',e=>{if(e.target.closest('.flip')||e.target.closest('.place'))return; openPlace();});
+    c.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target===c)openPlace();});
+  });
+  renderBoard('#board');
+}
+function place(p,slot){
+  S.roster[slot]=p; S.drafted.add(p.name);
+  if(openSlots().length===0){renderReveal();show('reveal');return;}
+  drawPack(); renderDraft();
+  const b=$('#board'); b.querySelector(`[data-slot="${slot}"]`)?.classList.add('pop');
+}
+function renderBoard(sel,{compact=false}={}){
+  const list=rosterList(S.roster), m=teamModel(list);
+  const row=s=>{const p=S.roster[s.id]; return `<li data-slot="${s.id}" class="${p?'filled':''} ${s.start?'st':'bn'}"><span class="sl">${s.label}</span>${p?`<span class="who"><b>${esc(p.name)}</b><small>${p.team} ${fmtSeason(p.season)}</small></span><em class="t-${tierOf(p.ovr)}">${p.ovr}</em>`:`<span class="dots">${s.full}</span>`}</li>`};
+  const chem=m.chem.map(c=>`<li class="${c.s}"><b>${c.k}</b><span>${c.txt}</span><em>${c.v>0?'+':''}${c.v}</em></li>`).join('');
+  $(sel).innerHTML=`<h2>Your Eight</h2><div class="rule"></div>
+   <ol class="slots"><li class="grp">Starting five</li>${SLOTS.filter(s=>s.start).map(row).join('')}<li class="grp">Bench</li>${SLOTS.filter(s=>!s.start).map(row).join('')}</ol>
+   <div class="ovr-line">Team rating <b>${m.ovr||'—'}</b></div>
+   ${list.some(x=>x.start)?`<h3 class="chem-h">Chemistry</h3><ul class="chem">${chem}</ul>`:'<p class="hint">Your first pick goes on the board.</p>'}`;
+}
+
+// ---------- reveal ----------
+function renderReveal(){
+  $('#reveal-cards').innerHTML=SLOTS.map(s=>`<div class="rv"><span class="rv-slot">${s.label}</span>${cardHTML(S.roster[s.id])}</div>`).join('');
+  renderBoard('#reveal-board');
+}
+
+// ---------- season ----------
+function userSide(){return makeSide({id:'YOU',name:'Your Eight',short:'Your Eight',team:null,list:rosterList(S.roster)})}
+function legendSide(L){return makeSide({id:L.id,name:L.name,short:L.name.replace(/^\d{4}–(\d{2}) /,"'$1 "),team:L.team,legend:true,L,list:L.players.map((p,i)=>({p,min:SLOTS[i].min,start:i<5}))})}
+function startSeason(){
+  const sides={YOU:userSide()}; LEGENDS.forEach(L=>sides[L.id]=legendSide(L));
+  const order=[...LEGENDS].sort(()=>rnd()-.5).map(L=>L.id);
+  const pairs=[]; for(let i=0;i<LEGENDS.length;i++)for(let j=i+1;j<LEGENDS.length;j++)pairs.push([LEGENDS[i].id,LEGENDS[j].id]);
+  const table={}; Object.keys(sides).forEach(k=>table[k]={w:0,l:0,pf:0,pa:0});
+  S.season={sides,order,pairs,round:0,table,games:[],ugames:[],stats:{},phase:'league',po:null};
+  show('season'); renderSeason();
+}
+function record(g){const T=S.season.table; const h=T[g.home],a=T[g.away]; h.pf+=g.hs;h.pa+=g.as;a.pf+=g.as;a.pa+=g.hs; if(g.win===g.home){h.w++;a.l++}else{a.w++;h.l++}}
+function addStats(g,phase){const st=S.season.stats; const bx=g.home==='YOU'?g.bh:g.away==='YOU'?g.ba:null; if(!bx)return;
+  bx.forEach(b=>{const k=b.name; st[k]=st[k]||{name:k,p:b.p,gp:0,pts:0,reb:0,ast:0,po:0,popts:0}; const s=st[k]; s.gp++;s.pts+=b.pts;s.reb+=b.reb;s.ast+=b.ast; if(phase!=='league'){s.po++;s.popts+=b.pts+1.2*b.reb+1.5*b.ast}});}
+function playRound(){
+  const Z=S.season; if(Z.round>=Z.order.length)return [];
+  const oid=Z.order[Z.round], U=Z.sides.YOU, O=Z.sides[oid], L=O.L;
+  const mU=matchupPts(U.list,L);
+  const g1=playGame(U,O,{matchH:mU}); const g2=playGame(O,U,{matchA:mU});
+  const out=[g1,g2]; out.forEach(g=>{record(g);addStats(g,'league');Z.ugames.push({...g,opp:oid,phase:'league'});});
+  // legend vs legend games assigned to this round
+  Z.pairs.forEach((pr,i)=>{ if(i%Z.order.length!==Z.round)return;
+    const A=Z.sides[pr[0]],B=Z.sides[pr[1]]; [playGame(A,B),playGame(B,A)].forEach(record);});
+  Z.round++; return out;
+}
+function standings(){const T=S.season.table; return Object.keys(T).sort((a,b)=>(T[b].w-T[a].w)||((T[b].pf-T[b].pa)-(T[a].pf-T[a].pa)));}
+function teamLabel(id){return id==='YOU'?'Your Eight':S.season.sides[id].name}
+function shortLabel(id){return S.season.sides[id].short}
+
+function clipping(g,i){
+  const sides=S.season.sides; const hd=headline(g,sides); const youWon=g.win==='YOU';
+  const home=g.home==='YOU'; const opp=home?g.away:g.home;
+  const paper=home?PAPERS[0]:`The ${TEAMS[sides[opp].team].city} ${['Courier','Chronicle','Ledger','Sentinel'][i%4]}`;
+  const tag=g.phase==='league'?(home?'Home':'Away'):g.phase;
+  const bxRow=(b)=>`<tr><td>${esc(b.name)}</td><td>${b.min}</td><td>${b.pts}</td><td>${b.reb}</td><td>${b.ast}</td></tr>`;
+  const bt=(lab,arr)=>`<table><caption>${esc(lab)}</caption><thead><tr><th>Player</th><th>MIN</th><th>PTS</th><th>REB</th><th>AST</th></tr></thead><tbody>${arr.map(bxRow).join('')}</tbody></table>`;
+  return `<article class="clip ${youWon?'w':'l'}"><div class="paper"><span>${paper}</span><span>${esc(tag)} · vs ${esc(shortLabel(opp))}</span></div>
+   <h4>${esc(hd.h)}</h4><p>${esc(hd.sub)}</p>
+   <div class="score"><span>${esc(shortLabel(g.home))} <b>${g.hs}</b></span><span>${esc(shortLabel(g.away))} <b>${g.as}</b></span><em>${youWon?'W':'L'}${g.ot?' · OT':''}</em></div>
+   <details><summary>Box score</summary><div class="bx">${bt(shortLabel(g.home),g.bh)}${bt(shortLabel(g.away),g.ba)}</div></details></article>`;
+}
+function renderSeason(newGames=[]){
+  const Z=S.season, T=Z.table, U=T.YOU, st=standings();
+  $('#s-record').textContent=`${U.w}–${U.l}`;
+  $('#s-standing').textContent=`${st.indexOf('YOU')+1} / 9`;
+  $('#s-diff').textContent=(U.pf-U.pa>=0?'+':'')+(U.pf-U.pa);
+  const leagueDone=Z.round>=Z.order.length;
+  $('#s-actions').innerHTML=Z.phase==='league'?(leagueDone?`<button class="cta" id="go-po">Start the playoffs</button>`:
+    `<button class="cta" id="play">Play the ${esc(shortLabel(Z.order[Z.round]))} series</button><button class="ghost" id="simall">Sim the season ⏩</button>`):'';
+  $('#play')&&($('#play').onclick=()=>{const g=playRound();renderSeason(g);});
+  $('#simall')&&($('#simall').onclick=()=>{let all=[];while(Z.round<Z.order.length)all=all.concat(playRound());renderSeason(all.slice(-2));});
+  $('#go-po')&&($('#go-po').onclick=startPlayoffs);
+  $('#sched').innerHTML=Z.order.map((oid,i)=>{const gs=Z.ugames.filter(g=>g.opp===oid);const L=Z.sides[oid];const t=TEAMS[L.team];
+    const res=gs.map(g=>`<i class="${g.win==='YOU'?'w':'l'}">${g.home==='YOU'?'H':'A'} ${g.win==='YOU'?'W':'L'}</i>`).join('');
+    return `<li class="${i===Z.round&&!leagueDone?'next':''}" style="--c1:${t.c1}"><span class="mini">${L.team}</span><b>${esc(L.short)}</b><div>${res||(i===Z.round?'<i class="nx">Next</i>':'<i>H</i><i>A</i>')}</div></li>`}).join('');
+  $('#table tbody').innerHTML=st.map((k,i)=>{const r=T[k];const d=r.pf-r.pa;return `<tr class="${k==='YOU'?'you':''} ${i<4?'po':''}"><td>${i+1}</td><td>${esc(teamLabel(k))}</td><td>${r.w+r.l}</td><td>${r.w}</td><td>${r.l}</td><td>${d>=0?'+':''}${d}</td></tr>`}).join('');
+  const recent=[...Z.ugames].reverse();
+  $('#clips').innerHTML=recent.length?recent.map((g,i)=>clipping(g,i)).join(''):'<p class="empty">Your first series is up next. Each game prints in the papers here.</p>';
+  renderBoard('#season-board');
+}
+
+// ---------- playoffs ----------
+function series(a,b,label){ // a higher seed
+  const Z=S.season, A=Z.sides[a], B=Z.sides[b]; let wa=0,wb=0; const games=[]; const homePat=[1,1,0,0,1,0,1]; let i=0;
+  const mu=id=>id==='YOU'?0:0;
+  while(wa<4&&wb<4){const aHome=homePat[i]; const H=aHome?A:B, W=aHome?B:A; const opts={};
+    if(H.id==='YOU'&&W.L)opts.matchH=matchupPts(H.list,W.L); if(W.id==='YOU'&&H.L)opts.matchA=matchupPts(W.list,H.L);
+    const g=playGame(H,W,opts); g.phase=label; games.push(g); if(g.win===a)wa++;else wb++; i++;
+    if(g.home==='YOU'||g.away==='YOU'){Z.ugames.push({...g,opp:g.home==='YOU'?g.away:g.home}); addStats(g,label);} }
+  return {a,b,wa,wb,winner:wa===4?a:b,games,label};
+}
+function startPlayoffs(){
+  const Z=S.season; Z.phase='playoffs'; const st=standings().slice(0,4);
+  const s1=series(st[0],st[3],'Semifinal'), s2=series(st[1],st[2],'Semifinal');
+  const seeds=standings(); const fa=seeds.indexOf(s1.winner)<seeds.indexOf(s2.winner)?s1.winner:s2.winner, fb=fa===s1.winner?s2.winner:s1.winner;
+  const fin=series(fa,fb,'Finals');
+  Z.po={seeds:st,semis:[s1,s2],fin};
+  renderResult(); show('result');
+}
+
+// ---------- result ----------
+function renderResult(){
+  const Z=S.season, T=Z.table, st=standings(), pos=st.indexOf('YOU')+1, po=Z.po; const U=T.YOU;
+  let status,cls,line;
+  if(!po.seeds.includes('YOU')){status='Lottery bound';cls='miss';line=`Finished ${pos}th of 9 and missed the playoffs. Record: ${U.w}–${U.l}.`;}
+  else if(po.fin.winner==='YOU'){status='Champions';cls='champ';line=`Finished ${pos}${['st','nd','rd','th'][Math.min(pos,4)-1]} in the league, then won the Finals ${Math.max(po.fin.wa,po.fin.wb)}–${Math.min(po.fin.wa,po.fin.wb)} over the ${teamLabel(po.fin.winner===po.fin.a?po.fin.b:po.fin.a)}.`;}
+  else if(po.fin.a==='YOU'||po.fin.b==='YOU'){status='Finals runner-up';cls='ru';line=`Reached the Finals and fell to the ${teamLabel(po.fin.winner)} ${Math.max(po.fin.wa,po.fin.wb)}–${Math.min(po.fin.wa,po.fin.wb)}.`;}
+  else {const s=po.semis.find(s=>s.a==='YOU'||s.b==='YOU'); status='Out in the semis';cls='semi';line=`Lost the semifinal to the ${teamLabel(s.winner)} ${Math.max(s.wa,s.wb)}–${Math.min(s.wa,s.wb)}.`;}
+  const stats=Object.values(Z.stats).sort((a,b)=>b.pts/b.gp-a.pts/a.gp);
+  const fmvp=(cls==='champ')?Object.values(Z.stats).filter(s=>s.po).sort((a,b)=>b.popts-a.popts)[0]:null;
+  $('#r-banner').className='banner '+cls;
+  $('#r-banner').innerHTML=`<small>Dynasty Draft · Title Run</small><h1>${status}</h1><p>${line}</p>${fmvp?`<div class="fmvp">Finals MVP <b>${esc(fmvp.name)}</b></div>`:''}`;
+  const ser=s=>`<div class="ser ${s.a==='YOU'||s.b==='YOU'?'mine':''}"><small>${s.label}</small><div><span class="${s.winner===s.a?'wn':''}">${esc(teamLabel(s.a))}</span><b>${s.wa}</b></div><div><span class="${s.winner===s.b?'wn':''}">${esc(teamLabel(s.b))}</span><b>${s.wb}</b></div></div>`;
+  $('#r-bracket').innerHTML=`<div class="col">${po.semis.map(ser).join('')}</div><div class="col fin">${ser(po.fin)}</div><div class="col champ-col"><small>Champion</small><b>${esc(teamLabel(po.fin.winner))}</b></div>`;
+  $('#r-table tbody').innerHTML=st.map((k,i)=>{const r=T[k];const d=r.pf-r.pa;return `<tr class="${k==='YOU'?'you':''} ${i<4?'po':''}"><td>${i+1}</td><td>${esc(teamLabel(k))}</td><td>${r.w}</td><td>${r.l}</td><td>${d>=0?'+':''}${d}</td></tr>`}).join('');
+  $('#r-stats tbody').innerHTML=stats.map(s=>`<tr><td>${esc(s.name)}</td><td>${s.gp}</td><td>${(s.pts/s.gp).toFixed(1)}</td><td>${(s.reb/s.gp).toFixed(1)}</td><td>${(s.ast/s.gp).toFixed(1)}</td></tr>`).join('');
+  $('#r-log').innerHTML=Z.ugames.map(g=>{const opp=g.opp;const home=g.home==='YOU';const us=home?g.hs:g.as, them=home?g.as:g.hs;
+    return `<li class="${g.win==='YOU'?'w':'l'}"><span>${esc(g.phase==='league'?(home?'Home':'Away'):g.phase)}</span><b>${esc(shortLabel(opp))}</b><em>${us}–${them}${g.ot?' OT':''}</em><i>${g.win==='YOU'?'W':'L'}</i></li>`}).join('');
+  renderBoard('#result-board');
+  saveBanner({date:new Date().toISOString().slice(0,10),status,cls,rec:`${U.w}–${U.l}`,ovr:teamModel(rosterList(S.roster)).ovr,star:[...rosterList(S.roster)].sort((a,b)=>b.p.ovr-a.p.ovr)[0].p.name,fmvp:fmvp?fmvp.name:null,roster:SLOTS.map(s=>S.roster[s.id].name)});
+}
+
+// ---------- banners (per-viewer) ----------
+const BKEY='dynasty-draft:banners:v1';
+function loadBanners(){try{return JSON.parse(localStorage.getItem(BKEY))||[]}catch{return []}}
+function saveBanner(b){try{const a=loadBanners();a.unshift(b);localStorage.setItem(BKEY,JSON.stringify(a.slice(0,40)))}catch{}}
+function renderBanners(){
+  const a=loadBanners(); const champs=a.filter(b=>b.cls==='champ').length;
+  $('#banners').innerHTML=a.length?`<p class="bsum"><b>${champs}</b> championship${champs===1?'':'s'} in <b>${a.length}</b> run${a.length===1?'':'s'} on this device.</p><ol class="blist">${a.map(b=>`<li class="${b.cls}"><span class="flag">${b.cls==='champ'?'◆':''}</span><div><b>${esc(b.status)}</b><small>${b.date} · ${b.rec} · rating ${b.ovr}${b.fmvp?' · Finals MVP '+esc(b.fmvp):''}</small><small class="ro">${b.roster.map(esc).join(' · ')}</small></div></li>`).join('')}</ol>`:
+    `<p class="empty">No runs yet. Finish a season and it hangs here, on this device.</p>`;
+}
+
+// ---------- wiring ----------
+function boot(){
+  renderHome(); show('home');
+  $$('[data-go="draft"]').forEach(b=>b.onclick=startDraft);
+  $$('[data-go="home"]').forEach(b=>b.onclick=()=>{renderHome();show('home')});
+  $$('[data-go="banners"]').forEach(b=>b.onclick=()=>{renderBanners();show('banners')});
+  $$('[data-go="how"]').forEach(b=>b.onclick=()=>{$('#how').hidden=false});
+  $('#how-close').onclick=()=>{$('#how').hidden=true};
+  $('#how').addEventListener('click',e=>{if(e.target.id==='how')$('#how').hidden=true});
+  $('#how-start').onclick=()=>{$('#how').hidden=true;startDraft()};
+  $$('#filters button').forEach(b=>b.onclick=()=>{S.filter=b.dataset.f;renderDraft()});
+  $('#begin').onclick=startSeason;
+  $('#redraft').onclick=startDraft;
+  $('#again').onclick=startDraft;
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#how').hidden=true});
+}
+boot();
+</script>
+</body>
+</html>
